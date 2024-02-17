@@ -1,5 +1,6 @@
 package com.example.bookmyshow.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,8 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "customer")
-@Getter
-@Setter
+@Data
 public class Customer {
     @Id
     @Column(name = "id", nullable = false)

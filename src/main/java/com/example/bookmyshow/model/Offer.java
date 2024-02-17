@@ -1,5 +1,6 @@
 package com.example.bookmyshow.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "offer")
-@Getter
-@Setter
+@Data
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="offer_seq")

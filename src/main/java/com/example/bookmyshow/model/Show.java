@@ -1,9 +1,6 @@
 package com.example.bookmyshow.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -14,8 +11,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "show", uniqueConstraints={@UniqueConstraint(columnNames={"date","movie_id","theater_id"})})
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 
 public class Show {

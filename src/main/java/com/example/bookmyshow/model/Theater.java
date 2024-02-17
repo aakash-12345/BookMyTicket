@@ -1,5 +1,6 @@
 package com.example.bookmyshow.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,8 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "theater")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class Theater {
     @Id
