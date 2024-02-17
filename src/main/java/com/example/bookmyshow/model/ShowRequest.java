@@ -1,4 +1,4 @@
-package com.example.bookmyshow.api;
+package com.example.bookmyshow.model;
 
 import lombok.Data;
 import lombok.Getter;
@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 @Data
 public class ShowRequest {
-    String moviename;
-    LocalDate date;
-    String city;
+    public String moviename;
+    public LocalDate date;
+    public String city;
 
 }

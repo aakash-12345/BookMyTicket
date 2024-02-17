@@ -1,6 +1,6 @@
 package com.example.bookmyshow.service;
 
-import com.example.bookmyshow.api.BookingRequest;
+import com.example.bookmyshow.model.BookingRequest;
 import com.example.bookmyshow.data.*;
 import com.example.bookmyshow.dto.ShowDTO;
 import com.example.bookmyshow.dto.ShowSeatDTO;
@@ -10,7 +10,6 @@ import com.example.bookmyshow.exception.SeatUnavailableException;
 import com.example.bookmyshow.model.*;
 import com.example.bookmyshow.offers.OfferProcessorManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

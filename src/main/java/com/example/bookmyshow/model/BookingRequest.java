@@ -1,4 +1,4 @@
-package com.example.bookmyshow.api;
+package com.example.bookmyshow.model;
 
 import lombok.Data;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import java.util.List;
 
 @Data
 public class BookingRequest {
-    Long showId;
-    List<Long> seats;
-    Long customerId;
+    public Long showId;
+    public List<Long> seats;
+    public Long customerId;
 
 }

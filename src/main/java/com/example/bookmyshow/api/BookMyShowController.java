@@ -2,6 +2,9 @@ package com.example.bookmyshow.api;
 
 import com.example.bookmyshow.dto.ShowDTO;
 import com.example.bookmyshow.dto.ShowSeatDTO;
+import com.example.bookmyshow.model.BookingRequest;
+import com.example.bookmyshow.model.ShowRequest;
+import com.example.bookmyshow.model.ShowSeatRequest;
 import com.example.bookmyshow.service.BookMyShowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
