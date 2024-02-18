@@ -57,13 +57,22 @@ public class BookMyTicketService {
     @Transactional
     public List<ShowDTO> findAllShowsByMovieAndDateAndCity(String moviename, LocalDate date, String city) {
         List<Show> shows = showRepository.findAllShowsNative(moviename, date, city);
-        return shows.stream().map((show -> new ShowDTO(show))).collect(Collectors.toList());
+        return shows.stream().map(show -> ShowDTO.builder()
+                .id(show.getId())
+                .date(show.getDate())
+                .startTime(show.getStartTime())
+                .movie(show.getMovie()).build()).collect(Collectors.toList());
     }
 
     public List<ShowSeatDTO> findAllAvailableSeatsForShow(Long showid) {
         List<ShowSeat> showSeats = showSeatRepository.findAllNonPendingNonConfirmedShowSeatsNative(showid, ShowSeat.BookingStatus.CONFIRMED.toString(), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING.toString());
-        List<ShowSeatDTO> collect = showSeats.stream().map(showSeat -> new ShowSeatDTO(showSeat)).collect(Collectors.toList());
-        return collect;
+        return showSeats.stream().map(showSeat -> ShowSeatDTO.builder()
+                .booking(showSeat.getBooking())
+                .reservationTime(showSeat.getReservationTime())
+                .status(showSeat.getStatus())
+                .showid(showSeat.getShow().getId())
+                .id(showSeat.getId())
+                .build()).collect(Collectors.toList());
     }
 
     @Transactional

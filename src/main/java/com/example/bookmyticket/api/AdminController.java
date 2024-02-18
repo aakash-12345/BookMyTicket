@@ -42,8 +42,8 @@ public class AdminController {
 
     @PostMapping(path = "/customers", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addCustomers(@RequestBody List<Customer> theaterSeats){
-        adminService.addCustomers(theaterSeats);
+    public void addCustomers(@RequestBody List<Customer> customerList){
+        adminService.addCustomers(customerList);
     }
 
     @PostMapping(path = "/offers", consumes = MediaType.APPLICATION_JSON_VALUE)
