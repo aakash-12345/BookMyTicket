@@ -10,8 +10,8 @@ import java.util.List;
 @Data
 public class Offer {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="offer_seq")
-    @SequenceGenerator(name = "offer_seq", sequenceName = "offer_seq", initialValue = 1, allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offer_seq")
+    @SequenceGenerator(name = "offer_seq", sequenceName = "offer_seq", initialValue = 1, allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -21,7 +21,4 @@ public class Offer {
     @Enumerated(EnumType.STRING)
     private OfferType offerType;
 
-    public enum OfferType{
-        THIRD_TICKET,AFTERNOON_TICKET
-    }
 }

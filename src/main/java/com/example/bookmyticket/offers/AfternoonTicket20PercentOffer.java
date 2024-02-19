@@ -3,6 +3,7 @@ package com.example.bookmyticket.offers;
 import com.example.bookmyticket.data.BookingRepository;
 import com.example.bookmyticket.model.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.util.CollectionUtils;
 
@@ -10,33 +11,24 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
 
-@Getter
-@Setter
+@RequiredArgsConstructor
 public class AfternoonTicket20PercentOffer implements OfferProcessor {
 
     public static final double TWENTY_PERCENT_OFF = 0.8;
 
-    BookingRepository bookingRepository;
-
-    private BigDecimal basicPrice;
-
-    private BigDecimal premiumPrice;
-
-    public AfternoonTicket20PercentOffer(BookingRepository bookingRepository, BigDecimal basicPrice, BigDecimal premiumPrice) {
-        this.bookingRepository=bookingRepository;
-        this.basicPrice=basicPrice;
-        this.premiumPrice=premiumPrice;
-    }
+    private final BookingRepository bookingRepository;
 
     @Override
     public void process(List<ShowSeat> showSeats, Booking booking) {
-        if(CollectionUtils.isEmpty(showSeats)) {return;}
+        if (CollectionUtils.isEmpty(showSeats)) {
+            return;
+        }
 
         Theater theater = showSeats.get(0).getTheaterSeat().getTheater();
         List<Offer> offers = theater.getOffers();
-        if(!CollectionUtils.isEmpty(offers) && offers.stream().filter(offer -> offer.getOfferType().equals(Offer.OfferType.AFTERNOON_TICKET)).findFirst().isPresent()){
+        if (!CollectionUtils.isEmpty(offers) && offers.stream().anyMatch(offer -> offer.getOfferType().equals(OfferType.AFTERNOON_TICKET))) {
             Show show = showSeats.get(0).getShow();
-            if(afternoonShow(show)){
+            if (afternoonShow(show)) {
                 booking.setTotalAmount(booking.getTotalAmount().multiply(BigDecimal.valueOf(TWENTY_PERCENT_OFF)));
                 bookingRepository.save(booking);
             }
@@ -46,10 +38,12 @@ public class AfternoonTicket20PercentOffer implements OfferProcessor {
     private boolean afternoonShow(Show show) {
         // Afternoon is 12pm to 5pm
         LocalTime startTime = show.getStartTime();
-        if(startTime.isAfter(LocalTime.parse("11:59")) && startTime.isBefore(LocalTime.parse("17:00"))){
-            return true;
-        }
-        return false;
+        return startTime.isAfter(LocalTime.parse("11:59")) && startTime.isBefore(LocalTime.parse("17:00"));
+    }
+
+    @Override
+    public OfferType getOfferType() {
+        return OfferType.AFTERNOON_TICKET;
     }
 
 }

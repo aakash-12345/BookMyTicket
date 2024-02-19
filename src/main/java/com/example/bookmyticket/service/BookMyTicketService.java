@@ -1,6 +1,5 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.model.BookingRequest;
 import com.example.bookmyticket.data.*;
 import com.example.bookmyticket.dto.ShowDTO;
 import com.example.bookmyticket.dto.ShowSeatDTO;
@@ -8,7 +7,7 @@ import com.example.bookmyticket.exception.CustomerNotFoundException;
 import com.example.bookmyticket.exception.InvalidBookingException;
 import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.model.*;
-import com.example.bookmyticket.offers.OfferProcessorManager;
+import com.example.bookmyticket.offers.OfferProcessorFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class BookMyTicketService {
 
     private final BookingRepository bookingRepository;
 
-    private final OfferProcessorManager offerProcessorManager;
+    private final OfferProcessorFactory offerProcessorFactory;
 
     @Value("${theater.seat.basic.price}")
     private BigDecimal basicPrice;
@@ -84,13 +83,18 @@ public class BookMyTicketService {
             validateReservation(showSeats);
             //all seats available for reservation
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
-            Booking booking = new Booking();
+            final Booking booking = new Booking();
             booking.setBookedBy(customer);
             booking.setTotalAmount(getPaymentAmount(showSeats, bookingRequest));
-            offerProcessorManager.process(showSeats, booking);
-            booking = bookingRepository.save(booking);
+            Theater theater = showSeats.get(0).getTheaterSeat().getTheater();
+            List<Offer> offers = theater.getOffers();
+            offers.forEach(offer -> {
+
+                offerProcessorFactory.getOfferProcessor(offer.getOfferType()).process(showSeats, booking);
+            });
+            Booking finalBooking = bookingRepository.save(booking);
             for (ShowSeat showSeat : showSeats) {
-                showSeat.setBooking(booking);
+                showSeat.setBooking(finalBooking);
                 showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
                 showSeat.setReservationTime(LocalDateTime.now());
             }
@@ -105,15 +109,7 @@ public class BookMyTicketService {
     private BigDecimal getPaymentAmount(List<ShowSeat> showSeats, BookingRequest bookingRequest) {
         BigDecimal total = new BigDecimal(0);
         for (ShowSeat showSeat : showSeats) {
-            TheaterSeat.SeatType seatType = showSeat.getTheaterSeat().getSeatType();
-            switch (seatType) {
-                case BASIC:
-                    total = total.add(basicPrice);
-                    break;
-                case PREMIUM:
-                    total = total.add(premiumPrice);
-                    break;
-            }
+            total = total.add(showSeat.getTheaterSeat().getSeatPrice());
         }
         return total;
     }
