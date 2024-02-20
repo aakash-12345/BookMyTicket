@@ -3,6 +3,7 @@ package com.example.bookmyticket.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -13,12 +14,12 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offer_seq")
     @SequenceGenerator(name = "offer_seq", sequenceName = "offer_seq", initialValue = 1, allocationSize = 1)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Long offerId;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "offers")
-    private List<Theater> theaters = new java.util.ArrayList<>();
+    private String offerName;
 
-    @Enumerated(EnumType.STRING)
-    private OfferType offerType;
+    private Double offerDiscount;
+    private String offerStartDate;
+    private String offerEndDate;
 
 }

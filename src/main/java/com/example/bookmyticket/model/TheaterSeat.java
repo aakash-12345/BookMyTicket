@@ -13,11 +13,8 @@ public class TheaterSeat {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "theaterseat_seq")
     @SequenceGenerator(name = "theaterseat_seq", sequenceName = "theaterseat_seq", initialValue = 1, allocationSize = 1)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "theater_id")
-    private Theater theater;
+    private Long theaterSeatId;
+    private Long theaterId;
     private String seatType;
     private BigDecimal seatPrice;
 

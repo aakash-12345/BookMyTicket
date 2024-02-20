@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Table;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -27,59 +28,45 @@ public class AdminService {
 
     private final ShowSeatRepository showSeatRepository;
 
-    @PersistenceContext
-    EntityManager em;
+    private final OfferRepository offerRepository;
 
+    @Transactional
     public void addTheaters(List<Theater> theaters) {
-        for (Theater theater : theaters) {
-            theaterRepository.save(theater);
-        }
-    }
-
-    public void addMovies(List<Movie> movies) {
-        for (Movie movie : movies) {
-            movieRepository.save(movie);
-        }
+        theaterRepository.saveAll(theaters);
     }
 
     @Transactional
-    //We need transactions because we are adding rows to 2 tables SHOW & SHOW_SEAT
+    public void addMovies(List<Movie> movies) {
+        movieRepository.saveAll(movies);
+    }
+
+    @Transactional
     public void addShows(List<Show> shows) {
         for (Show show : shows) {
-            Show savedShow = showRepository.save(show);
-            List<TheaterSeat> theaterSeats = theaterSeatRepository.findByTheater(savedShow.getTheater());
+            List<TheaterSeat> theaterSeats = theaterSeatRepository.findByTheaterId(show.getTheaterId());
             for (TheaterSeat theaterSeat : theaterSeats) {
                 ShowSeat showSeat = new ShowSeat();
-                showSeat.setShow(savedShow);
-                showSeat.setTheaterSeat(theaterSeat);
+                showSeat.setShowId(show.getShowId());
+                showSeat.setTheaterSeatId(theaterSeat.getTheaterSeatId());
                 showSeatRepository.save(showSeat);
             }
+            showRepository.save(show);
         }
-    }
 
-    public void addTheaterSeats(List<TheaterSeat> theaterSeats) {
-        for (TheaterSeat theaterSeat : theaterSeats) {
-            theaterSeatRepository.save(theaterSeat);
-        }
-    }
-
-    public void addCustomers(List<Customer> customers) {
-        for (Customer customer : customers) {
-            customerRepository.save(customer);
-        }
     }
 
     @Transactional
-    //We need transactions because we are updating 3 tables: OFFER, THEATER & THEATER_OFFERS
+    public void addTheaterSeats(List<TheaterSeat> theaterSeats) {
+        theaterSeatRepository.saveAll(theaterSeats);
+    }
+
+    @Transactional
+    public void addCustomers(List<Customer> customers) {
+        customerRepository.saveAll(customers);
+    }
+
+    @Transactional
     public void addOffers(List<Offer> offers) {
-        for (Offer offer : offers) {
-            Offer persistedOffer = em.merge(offer);
-            List<Theater> theaters = persistedOffer.getTheaters();
-            for (int i = 0; i < theaters.size(); i++) {
-                Theater theater = theaters.get(i);
-                theater.getOffers().add(persistedOffer);
-                em.merge(theater);
-            }
-        }
+        offerRepository.saveAll(offers);
     }
 }

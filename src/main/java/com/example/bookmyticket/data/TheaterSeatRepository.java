@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TheaterSeatRepository extends JpaRepository<TheaterSeat, Long> {
 
-    List<TheaterSeat> findByTheater(Theater theater);
+    List<TheaterSeat> findByTheaterId(Long theaterId);
 }

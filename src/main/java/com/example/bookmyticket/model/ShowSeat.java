@@ -12,27 +12,20 @@ import java.time.LocalDateTime;
 public class ShowSeat {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="showseat_seq")
-    @SequenceGenerator(name = "showseat_seq", sequenceName = "showseat_seq", initialValue = 1, allocationSize=1)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "showseat_seq")
+    @SequenceGenerator(name = "showseat_seq", sequenceName = "showseat_seq", initialValue = 1, allocationSize = 1)
+    private Long showSeatId;
 
-    @ManyToOne
-    @JoinColumn(name = "show_id")
-    private Show show;
+    private Long showId;
 
     private LocalDateTime reservationTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theater_seat_id")
-    @JsonIgnore
-    private TheaterSeat theaterSeat;
+    private Long theaterSeatId;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status = BookingStatus.UNRESERVED;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    private Long bookingId;
 
     public enum BookingStatus {
         UNRESERVED, RESERVED_PAYMENT_PENDING, CONFIRMED

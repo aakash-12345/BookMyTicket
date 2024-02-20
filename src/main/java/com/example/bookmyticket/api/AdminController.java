@@ -22,7 +22,7 @@ public class AdminController {
         adminService.addTheaters(theaters);
     }
 
-    @PostMapping(path = "/theaterseats", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/theaterSeats", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void addTheaterSeats(@RequestBody List<TheaterSeat> theaterSeats){
         adminService.addTheaterSeats(theaterSeats);
