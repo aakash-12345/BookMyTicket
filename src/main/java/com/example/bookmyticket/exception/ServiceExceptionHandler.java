@@ -1,5 +1,7 @@
 package com.example.bookmyticket.exception;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,55 +18,45 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleInvalidDataException(ConstraintViolationException ide) {
-        return handleException(ide);
+    public ErrorResponse handleInvalidDataException(ConstraintViolationException ex) {
+        return handleException(ex);
     }
 
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException ide) {
-        return handleException(ide);
+    public ErrorResponse handleInvalidBookingException(InvalidBookingException ex) {
+        return handleException(ex);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handlePaymentFailedException(PaymentFailedException ex) {
+        return handleException(ex);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleSeatUnavailableException(SeatUnavailableException ex) {
+        return handleException(ex);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException ex) {
+        return handleException(ex);
     }
 
     private ErrorResponse handleException(Exception e) {
         return new ErrorResponse(e.getMessage());
     }
 
+    @RequiredArgsConstructor
+    @Data
     public static class ErrorResponse {
-        private String message;
-
-        public ErrorResponse(String error) {
-            this.message = error;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-    }
-
-    public static class ValidationErrorResponse {
-        private String objectName;
-        private String loggingCorrelationId;
-        private Map<String, String> fieldErrors;
-
-        public ValidationErrorResponse(String objectName, String loggingCorrelationId, Map<String, String> fieldErrors) {
-            this.objectName = objectName;
-            this.loggingCorrelationId = loggingCorrelationId;
-            this.fieldErrors = fieldErrors;
-        }
-
-        public String getObjectName() {
-            return objectName;
-        }
-
-        public String getLoggingCorrelationId() {
-            return loggingCorrelationId;
-        }
-
-        public Map<String, String> getFieldErrors() {
-            return fieldErrors;
-        }
+        private final String message;
     }
 }
