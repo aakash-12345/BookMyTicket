@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -184,7 +183,8 @@ public class BookMyTicketService {
             }
         }
     }
-    public List<OfferDTO> getOfferList(){
+
+    public List<OfferDTO> getOfferList() {
         List<Offer> offerList = offerRepository.findAllValidOffers(LocalDate.now());
         return offerList.stream().map(offer -> OfferDTO.builder()
                 .offerId(offer.getOfferId())

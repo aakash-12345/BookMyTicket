@@ -1,10 +1,11 @@
 package com.example.bookmyticket.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "show", uniqueConstraints = {@UniqueConstraint(columnNames = {"date", "movie_id", "theater_id"})})

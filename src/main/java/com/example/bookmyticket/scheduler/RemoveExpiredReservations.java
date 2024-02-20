@@ -5,15 +5,12 @@ import com.example.bookmyticket.data.ShowSeatRepository;
 import com.example.bookmyticket.model.Booking;
 import com.example.bookmyticket.model.ShowSeat;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

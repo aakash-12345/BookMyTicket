@@ -16,22 +16,22 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleInvalidDataException(ConstraintViolationException ide){
+    public ErrorResponse handleInvalidDataException(ConstraintViolationException ide) {
         return handleException(ide);
     }
 
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException ide){
+    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException ide) {
         return handleException(ide);
     }
 
-    private ErrorResponse handleException(Exception e){
+    private ErrorResponse handleException(Exception e) {
         return new ErrorResponse(e.getMessage());
     }
 
-    public static class ErrorResponse{
+    public static class ErrorResponse {
         private String message;
 
         public ErrorResponse(String error) {
@@ -44,10 +44,10 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
     }
 
-    public static class ValidationErrorResponse{
+    public static class ValidationErrorResponse {
         private String objectName;
         private String loggingCorrelationId;
-        private Map<String,String> fieldErrors;
+        private Map<String, String> fieldErrors;
 
         public ValidationErrorResponse(String objectName, String loggingCorrelationId, Map<String, String> fieldErrors) {
             this.objectName = objectName;

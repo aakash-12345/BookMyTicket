@@ -1,6 +1,5 @@
 package com.example.bookmyticket.data;
 
-import com.example.bookmyticket.model.Theater;
 import com.example.bookmyticket.model.TheaterSeat;
 import org.springframework.data.jpa.repository.JpaRepository;
 
