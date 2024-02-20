@@ -7,9 +7,7 @@ import com.example.bookmyticket.exception.CustomerNotFoundException;
 import com.example.bookmyticket.exception.InvalidBookingException;
 import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.model.*;
-import com.example.bookmyticket.offers.OfferProcessorFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -19,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +27,6 @@ public class BookMyTicketService {
     public static final String SEATS_UNAVAILABLE = "Seats Unavailable.";
     public static final String RESERVATION_SUCCESSFUL = "Reservation Successful.";
     public static final String INVALID_BOOKING = "Invalid Booking.";
-    public static final int SEAT_COST = 100;
     public static final String CUSTOMER_NOT_FOUND = "Customer Not Found";
 
     private final TheaterRepository theaterRepository;
@@ -46,14 +42,6 @@ public class BookMyTicketService {
     private final ShowSeatRepository showSeatRepository;
 
     private final BookingRepository bookingRepository;
-
-    private final OfferProcessorFactory offerProcessorFactory;
-
-    @Value("${theater.seat.basic.price}")
-    private BigDecimal basicPrice;
-
-    @Value("${theater.seat.premium.price}")
-    private BigDecimal premiumPrice;
 
     public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
         List<Theater> theaterList = theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city);
