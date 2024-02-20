@@ -3,6 +3,7 @@ package com.example.bookmyticket.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,11 +16,9 @@ public class Offer {
     @SequenceGenerator(name = "offer_seq", sequenceName = "offer_seq", initialValue = 1, allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long offerId;
-
     private String offerName;
-
-    private Double offerDiscount;
-    private String offerStartDate;
-    private String offerEndDate;
+    private BigDecimal offerDiscount;
+    private LocalDate offerStartDate;
+    private LocalDate offerEndDate;
 
 }
