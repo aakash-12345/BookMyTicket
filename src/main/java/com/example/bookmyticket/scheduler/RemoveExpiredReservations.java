@@ -4,6 +4,7 @@ import com.example.bookmyticket.data.BookingRepository;
 import com.example.bookmyticket.data.ShowSeatRepository;
 import com.example.bookmyticket.model.Booking;
 import com.example.bookmyticket.model.ShowSeat;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,46 +16,39 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class RemoveExpiredReservations {
 
-    public static final int DELETE_UNRESERVED_POLL_FREQUENCY = 10000;
-
-    @Value("${payment.session.timeout.in.msec}")
+    @Value("${payment.session.timeout}")
     private Integer sessionTimeout;
 
-    @Value("${polling.frequency.in.msec : 10000}")
-    private static final int pollingFrequency = 10000;
+    private final ShowSeatRepository showSeatRepository;
 
-    @Autowired
-    ShowSeatRepository showSeatRepository;
-
-    @Autowired
-    BookingRepository bookingRepository;
-
-    @PersistenceContext
-    private EntityManager em;
+    private final BookingRepository bookingRepository;
 
     @Transactional
-    //Need transactions because we are changing 2 tables: updating SHOW_SEAT & deleting from BOOKING table
-    @Scheduled(initialDelay = pollingFrequency, fixedDelay = pollingFrequency)
-    public void removeExpiredReservations(){
+    @Scheduled(fixedRateString = "${polling.frequency}")
+    public void removeExpiredReservations() {
         //fetch all PENDING ShowSeats
-        List<ShowSeat> pendingShowSeats = showSeatRepository.findAllByStatusIs(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
-        if(!CollectionUtils.isEmpty(pendingShowSeats)){
-            //if now() - createddate > SESION_TIMEOUT then status="" and delete Booking
-            for(ShowSeat showSeat: pendingShowSeats)
-            if(Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > sessionTimeout){
-                Booking booking = showSeat.getBooking();
-                showSeat.setStatus(ShowSeat.BookingStatus.UNRESERVED);
-                showSeat.setBooking(null);
-                showSeat.setReservationTime(null);
-                showSeatRepository.save(showSeat);
-                em.flush();
-                bookingRepository.delete(booking);
+        List<ShowSeat> pendingShowSeats = showSeatRepository.findAllByStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
+        if (!CollectionUtils.isEmpty(pendingShowSeats)) {
+            //if now() - reservationTime > SESSION_TIMEOUT then status="" and delete Booking
+            List<Booking> bookings = new ArrayList<>();
+            for (ShowSeat showSeat : pendingShowSeats) {
+                if (Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > sessionTimeout) {
+                    Booking booking = bookingRepository.findById(showSeat.getBookingId()).get();
+                    showSeat.setStatus(ShowSeat.BookingStatus.UNRESERVED);
+                    showSeat.setBookingId(null);
+                    showSeat.setReservationTime(null);
+                    showSeatRepository.save(showSeat);
+                    bookings.add(booking);
+                }
             }
+            bookingRepository.deleteAll(bookings);
         }
     }
 }
