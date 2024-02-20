@@ -1,14 +1,17 @@
 package com.example.bookmyticket.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "movie")
 @Data
-@NoArgsConstructor
+@Builder
+@RequiredArgsConstructor
 public class Movie {
     @Id
     @Column(name = "id", nullable = false)

@@ -1,6 +1,8 @@
 package com.example.bookmyticket.model;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,6 +12,8 @@ import java.util.List;
 @Entity
 @Table(name = "booking")
 @Data
+@Builder
+@RequiredArgsConstructor
 public class Booking {
     @Id
     @Column(name = "id", nullable = false)

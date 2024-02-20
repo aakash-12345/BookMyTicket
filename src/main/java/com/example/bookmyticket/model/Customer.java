@@ -1,12 +1,16 @@
 package com.example.bookmyticket.model;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "customer")
 @Data
+@Builder
+@RequiredArgsConstructor
 public class Customer {
     @Id
     @Column(name = "id", nullable = false)

@@ -1,5 +1,6 @@
 package com.example.bookmyticket.api;
 
+import com.example.bookmyticket.dto.OfferDTO;
 import com.example.bookmyticket.dto.ShowDTO;
 import com.example.bookmyticket.dto.ShowSeatDTO;
 import com.example.bookmyticket.model.BookingRequest;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/bms")
+@RequestMapping(value = "/bookMyTicket")
 public class BookMyTicketController {
 
     private final BookMyTicketService bookMyTicketService;
@@ -38,7 +39,7 @@ public class BookMyTicketController {
     }
 
     @GetMapping(path = "/offerList")
-    public String offerList() {
+    public List<OfferDTO> offerList() {
         return bookMyTicketService.getOfferList();
     }
 

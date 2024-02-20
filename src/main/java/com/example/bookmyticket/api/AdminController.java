@@ -1,6 +1,6 @@
 package com.example.bookmyticket.api;
 
-import com.example.bookmyticket.model.*;
+import com.example.bookmyticket.dto.*;
 import com.example.bookmyticket.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,37 +18,37 @@ public class AdminController {
 
     @PostMapping(path = "/theaters", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addTheater(@RequestBody List<Theater> theaters){
+    public void addTheater(@RequestBody List<TheaterDTO> theaters){
         adminService.addTheaters(theaters);
     }
 
     @PostMapping(path = "/theaterSeats", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addTheaterSeats(@RequestBody List<TheaterSeat> theaterSeats){
+    public void addTheaterSeats(@RequestBody List<TheaterSeatDTO> theaterSeats){
         adminService.addTheaterSeats(theaterSeats);
     }
 
     @PostMapping(path = "/movies", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addMovies(@RequestBody List<Movie> movies){
+    public void addMovies(@RequestBody List<MovieDTO> movies){
         adminService.addMovies(movies);
     }
 
     @PostMapping(path = "/shows", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addShows(@RequestBody List<Show> shows){
+    public void addShows(@RequestBody List<ShowDTO> shows){
         adminService.addShows(shows);
     }
 
     @PostMapping(path = "/customers", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addCustomers(@RequestBody List<Customer> customerList){
+    public void addCustomers(@RequestBody List<CustomerDTO> customerList){
         adminService.addCustomers(customerList);
     }
 
-    @PostMapping(path = "/offers", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/offers")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addOffers(@RequestBody List<Offer> offers){
+    public void addOffers(@RequestBody List<OfferDTO> offers){
         adminService.addOffers(offers);
     }
 }

@@ -184,12 +184,14 @@ public class BookMyTicketService {
             }
         }
     }
-    private List<OfferDTO> getOfferList(){
+    public List<OfferDTO> getOfferList(){
         List<Offer> offerList = offerRepository.findAllValidOffers(LocalDate.now());
         return offerList.stream().map(offer -> OfferDTO.builder()
                 .offerId(offer.getOfferId())
                 .offerName(offer.getOfferName())
                 .offerDiscount(offer.getOfferDiscount())
+                .offerStartDate(offer.getOfferStartDate())
+                .offerEndDate(offer.getOfferEndDate())
                 .build()).collect(Collectors.toList());
     }
 

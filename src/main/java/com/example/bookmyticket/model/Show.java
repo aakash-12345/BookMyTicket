@@ -9,8 +9,8 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "show", uniqueConstraints = {@UniqueConstraint(columnNames = {"date", "movie_id", "theater_id"})})
 @Data
-@NoArgsConstructor
-
+@Builder
+@RequiredArgsConstructor
 public class Show {
     @Id
     @Column(name = "id", nullable = false)

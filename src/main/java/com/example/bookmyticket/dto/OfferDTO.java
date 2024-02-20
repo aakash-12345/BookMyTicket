@@ -12,4 +12,6 @@ public class OfferDTO {
     private Long offerId;
     private String offerName;
     private BigDecimal offerDiscount;
+    private LocalDate offerStartDate;
+    private LocalDate offerEndDate;
 }

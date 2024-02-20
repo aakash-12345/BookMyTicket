@@ -1,7 +1,9 @@
 package com.example.bookmyticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "show_seat")
 @Data
+@Builder
+@RequiredArgsConstructor
 public class ShowSeat {
     @Id
     @Column(name = "id", nullable = false)
