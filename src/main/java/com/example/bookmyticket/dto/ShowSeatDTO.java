@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ShowSeatDTO {
-    private Long id;
-    private Long showid;
-    private LocalDateTime reservationTime;
-    private ShowSeat.BookingStatus status;
-    private Booking booking;
+    private Long showSeatId;
+    private Long showId;
 }

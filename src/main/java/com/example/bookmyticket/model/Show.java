@@ -18,18 +18,14 @@ public class Show {
     @SequenceGenerator(name = "show_seq", sequenceName = "show_seq", initialValue = 1, allocationSize = 1)
     private Long showId;
 
-    private LocalDate date;
+    private LocalDate showDate;
 
-    private LocalTime startTime;
+    private String startTime;
 
     private Long runTime;
 
-    //    @OneToOne(orphanRemoval = true, cascade = {CascadeType.MERGE})
-//    @JoinColumn(name = "movie_id")
     private Long movieId;
 
-    //    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-//    @JoinColumn(name = "theater_id")
     private Long theaterId;
 
 }

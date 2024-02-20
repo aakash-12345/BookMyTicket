@@ -19,17 +19,17 @@ public class BookMyTicketController {
 
     private final BookMyTicketService bookMyTicketService;
 
-    @GetMapping(path = "/movieshows", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<ShowDTO> shows(@RequestBody ShowRequest showRequest) {
-        return bookMyTicketService.findAllShowsByMovieAndDateAndCity(showRequest.moviename, showRequest.date, showRequest.city);
+    @GetMapping(path = "/movieShows", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<ShowDTO> shows(@RequestParam(value = "theaterName") String theaterName, @RequestParam(value = "city") String city) {
+        return bookMyTicketService.findAllShowsByTheaterNameAndCity(theaterName, city);
     }
 
-    @GetMapping(path = "/showseats", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<ShowSeatDTO> showSeats(@RequestBody ShowSeatRequest showSeatRequest) {
-        return bookMyTicketService.findAllAvailableSeatsForShow(showSeatRequest.getShowid());
+    @GetMapping(path = "/showSeats", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<ShowSeatDTO> showSeats(@RequestParam(value = "showId") Long showId) {
+        return bookMyTicketService.findAllAvailableSeatsForShow(showId);
     }
 
-    @PostMapping(path = "/reserveseats", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/reserveSeats", consumes = MediaType.APPLICATION_JSON_VALUE)
     public String bookSeats(@RequestBody BookingRequest bookingRequest) {
         return bookMyTicketService.reserveSeats(bookingRequest);
     }

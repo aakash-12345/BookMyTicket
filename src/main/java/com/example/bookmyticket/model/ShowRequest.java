@@ -6,8 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class ShowRequest {
-    public String moviename;
-    public LocalDate date;
+    public String TheaterName;
     public String city;
 
 }

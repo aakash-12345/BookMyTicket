@@ -17,7 +17,9 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,48 +55,51 @@ public class BookMyTicketService {
     @Value("${theater.seat.premium.price}")
     private BigDecimal premiumPrice;
 
-    @Transactional
-    public List<ShowDTO> findAllShowsByMovieAndDateAndCity(String moviename, LocalDate date, String city) {
-        List<Show> shows = showRepository.findAllShowsNative(moviename, date, city);
+    public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
+        List<Theater> theaterList = theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city);
+        LocalDate currDate = LocalDate.now();
+        LocalDate lastAvailableDate = currDate.minusDays(14);
+        List<Show> shows = new ArrayList<>();
+        theaterList.forEach(theater -> {
+            shows.addAll(showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate));
+        });
+
         return shows.stream().map(show -> ShowDTO.builder()
-                .id(show.getId())
-                .date(show.getDate())
+                .showId(show.getShowId())
+                .showDate(show.getShowDate())
                 .startTime(show.getStartTime())
-                .movie(show.getMovie()).build()).collect(Collectors.toList());
+                .movieId(show.getMovieId())
+                .movieName(movieRepository.findById(show.getMovieId()).get().getMovieName())
+                .runTime(show.getRunTime())
+                .theaterId(show.getTheaterId())
+                .build()).collect(Collectors.toList());
     }
 
-    public List<ShowSeatDTO> findAllAvailableSeatsForShow(Long showid) {
-        List<ShowSeat> showSeats = showSeatRepository.findAllNonPendingNonConfirmedShowSeatsNative(showid, ShowSeat.BookingStatus.CONFIRMED.toString(), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING.toString());
+    public List<ShowSeatDTO> findAllAvailableSeatsForShow(Long showId) {
+        List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndStatus(showId, ShowSeat.BookingStatus.UNRESERVED);
         return showSeats.stream().map(showSeat -> ShowSeatDTO.builder()
-                .booking(showSeat.getBooking())
-                .reservationTime(showSeat.getReservationTime())
-                .status(showSeat.getStatus())
-                .showid(showSeat.getShow().getId())
-                .id(showSeat.getId())
+                .showId(showSeat.getShowId())
+                .showSeatId(showSeat.getShowSeatId())
                 .build()).collect(Collectors.toList());
     }
 
     @Transactional
     // Need transaction as we are updating many tables : BOOKING, SHOW_SEAT
     public String reserveSeats(BookingRequest bookingRequest) {
-        List<ShowSeat> showSeats = showSeatRepository.findAllById(bookingRequest.getSeats());
+        List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
         //This locks all showseats to be booked for customer
         try {
             validateReservation(showSeats);
             //all seats available for reservation
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
             final Booking booking = new Booking();
-            booking.setBookedBy(customer);
-            booking.setTotalAmount(getPaymentAmount(showSeats, bookingRequest));
-            Theater theater = showSeats.get(0).getTheaterSeat().getTheater();
-            List<Offer> offers = theater.getOffers();
-            offers.forEach(offer -> {
-
-                offerProcessorFactory.getOfferProcessor(offer.getOfferType()).process(showSeats, booking);
-            });
-            Booking finalBooking = bookingRepository.save(booking);
+            booking.setCustomerId(customer.getCustomerId());
+            booking.setTotalAmount(getPaymentAmount(showSeats));
+            booking.setShowId(showSeats.get(0).getShowId());
+            booking.setTheaterId(theaterSeatRepository.findById(showSeats.get(0).getTheaterSeatId()).get().getTheaterId());
+            booking.setReservationDate(LocalDateTime.now());
+            bookingRepository.save(booking);
             for (ShowSeat showSeat : showSeats) {
-                showSeat.setBooking(finalBooking);
                 showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
                 showSeat.setReservationTime(LocalDateTime.now());
             }
@@ -103,13 +108,16 @@ public class BookMyTicketService {
             return SEATS_UNAVAILABLE;
         } catch (CustomerNotFoundException e) {
             return CUSTOMER_NOT_FOUND;
+        } catch (Exception e) {
+            return e.getMessage();
         }
+
     }
 
-    private BigDecimal getPaymentAmount(List<ShowSeat> showSeats, BookingRequest bookingRequest) {
+    private BigDecimal getPaymentAmount(List<ShowSeat> showSeats) {
         BigDecimal total = new BigDecimal(0);
         for (ShowSeat showSeat : showSeats) {
-            total = total.add(showSeat.getTheaterSeat().getSeatPrice());
+            total = total.add(theaterSeatRepository.findById(showSeat.getTheaterSeatId()).get().getSeatPrice());
         }
         return total;
     }

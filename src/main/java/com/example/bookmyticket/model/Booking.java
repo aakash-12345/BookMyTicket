@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "booking")
@@ -17,7 +19,11 @@ public class Booking {
 
     private BigDecimal totalAmount;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer bookedBy;
+    private Long showId;
+
+    private Long theaterId;
+
+    private LocalDateTime reservationDate;
+
+    private Long customerId;
 }

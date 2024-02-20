@@ -11,9 +11,17 @@ import java.time.LocalTime;
 @Data
 @Builder
 public class ShowDTO {
-    private Long id;
-    private LocalDate date;
-    private LocalTime startTime;
-    private Movie movie;
-    private Theater theater;
+    private Long showId;
+
+    private LocalDate showDate;
+
+    private String startTime;
+
+    private Long runTime;
+
+    private Long movieId;
+
+    private Long theaterId;
+
+    private String movieName;
 }
