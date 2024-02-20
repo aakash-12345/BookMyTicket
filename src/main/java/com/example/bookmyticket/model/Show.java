@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "show", uniqueConstraints = {@UniqueConstraint(columnNames = {"date", "movie_id", "theater_id"})})
+@Table(name = "show")
 @Data
 @Builder
 @RequiredArgsConstructor

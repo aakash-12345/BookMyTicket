@@ -86,12 +86,12 @@ public class BookMyTicketService {
             validateReservation(showSeats);
             //all seats available for reservation
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
-            Booking booking = new Booking();
-            booking.setCustomerId(customer.getCustomerId());
-            booking.setTotalAmount(getPaymentAmount(showSeats));
-            booking.setShowId(showSeats.get(0).getShowId());
-            booking.setTheaterId(theaterSeatRepository.findById(showSeats.get(0).getTheaterSeatId()).get().getTheaterId());
-            booking.setReservationDate(LocalDateTime.now());
+            Booking booking = Booking.builder()
+                    .customerId(customer.getCustomerId())
+                    .totalAmount(getPaymentAmount(showSeats))
+                    .showId(showSeats.get(0).getShowId())
+                    .theaterId(theaterSeatRepository.findById(showSeats.get(0).getTheaterSeatId()).get().getTheaterId())
+                    .reservationDate(LocalDateTime.now()).build();
             booking = bookingRepository.save(booking);
             for (ShowSeat showSeat : showSeats) {
                 showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
