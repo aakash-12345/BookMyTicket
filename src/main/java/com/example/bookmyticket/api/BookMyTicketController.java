@@ -18,7 +18,7 @@ public class BookMyTicketController {
     private final BookMyTicketService bookMyTicketService;
 
     @GetMapping(path = "/movieShows")
-    public List<ShowDTO> shows(@RequestParam(value = "theaterName") String theaterName, @RequestParam(value = "city") String city) {
+    public List<ShowDTO> movieShows(@RequestParam(value = "theaterName") String theaterName, @RequestParam(value = "city") String city) {
         return bookMyTicketService.findAllShowsByTheaterNameAndCity(theaterName, city);
     }
 
@@ -28,7 +28,7 @@ public class BookMyTicketController {
     }
 
     @PostMapping(path = "/reserveSeats")
-    public String bookSeats(@RequestBody BookingRequest bookingRequest) {
+    public String reserveSeats(@RequestBody BookingRequest bookingRequest) {
         return bookMyTicketService.reserveSeats(bookingRequest);
     }
 

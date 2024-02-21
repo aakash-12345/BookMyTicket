@@ -1,8 +1,6 @@
 package com.example.bookmyticket.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +9,8 @@ import java.time.LocalDateTime;
 @Table(name = "show_seat")
 @Data
 @Builder
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShowSeat {
     @Id
     @Column(name = "id", nullable = false)

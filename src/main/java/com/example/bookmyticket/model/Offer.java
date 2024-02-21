@@ -1,8 +1,6 @@
 package com.example.bookmyticket.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -12,7 +10,8 @@ import java.time.LocalDate;
 @Table(name = "offer")
 @Data
 @Builder
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offer_seq")

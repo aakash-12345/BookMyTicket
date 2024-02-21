@@ -30,8 +30,8 @@ public class BookMyTicketService {
     public static final String SEATS_UNAVAILABLE = "Seats Unavailable.";
     public static final String RESERVATION_SUCCESSFUL = "Reservation Successful.";
     public static final String INVALID_BOOKING = "Invalid Booking.";
-    public static final String CUSTOMER_NOT_FOUND = "Customer Not Found";
-    public static final String PAYMENT_FAILED = "Payment is Failed";
+    public static final String CUSTOMER_NOT_FOUND = "Customer Not Found.";
+    public static final String PAYMENT_FAILED = "Payment is Failed.";
 
     private final TheaterRepository theaterRepository;
 
@@ -92,7 +92,7 @@ public class BookMyTicketService {
                     .showId(showSeats.get(0).getShowId())
                     .theaterId(theaterSeatRepository.findById(showSeats.get(0).getTheaterSeatId()).get().getTheaterId())
                     .reservationDate(LocalDateTime.now()).build();
-            booking = bookingRepository.save(booking);
+            bookingRepository.save(booking);
             for (ShowSeat showSeat : showSeats) {
                 showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
                 showSeat.setReservationTime(LocalDateTime.now());
@@ -161,11 +161,11 @@ public class BookMyTicketService {
         for (ShowSeat showSeat : showSeats) {
             total = total.add(theaterSeatRepository.findById(showSeat.getTheaterSeatId()).get().getSeatPrice());
         }
-        total = total.multiply(offerRepository.findById(offerId).get().getOfferDiscount());
+        total = total.multiply(BigDecimal.valueOf(1L).subtract(offerRepository.findById(offerId).get().getOfferDiscount()));
         return total;
     }
 
-    private void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
+    public void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
         try {
             //paymentGatewayCall
             for (ShowSeat showSeat : showSeats) {

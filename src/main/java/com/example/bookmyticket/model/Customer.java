@@ -1,8 +1,6 @@
 package com.example.bookmyticket.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -10,7 +8,8 @@ import javax.persistence.*;
 @Table(name = "customer")
 @Data
 @Builder
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class Customer {
     @Id
     @Column(name = "id", nullable = false)
