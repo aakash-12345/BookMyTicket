@@ -1,6 +1,6 @@
-package com.example.bookmyticket.data;
+package com.example.bookmyticket.repos;
 
-import com.example.bookmyticket.model.Show;
+import com.example.bookmyticket.dao.Show;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

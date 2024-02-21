@@ -29,7 +29,7 @@ public class SwaggerConfig {
                         .description(swaggerProperties.getApiDescription())
                         .version(swaggerProperties.getApiVersion())
                         .license(new License().name(swaggerProperties.getLicenseName())
-                                .url(swaggerProperties.getLicenseName()))
+                                .url(swaggerProperties.getLicenseUrl()))
                         .contact(new Contact().name(swaggerProperties.getContactTeam())
                                 .url(swaggerProperties.getContactConfluence())
                                 .email(swaggerProperties.getContactEmail())))

@@ -1,6 +1,6 @@
 package com.example.bookmyticket.api;
 
-import com.example.bookmyticket.model.BookingRequest;
+import com.example.bookmyticket.dao.BookingRequest;
 import com.example.bookmyticket.service.BookMyTicketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

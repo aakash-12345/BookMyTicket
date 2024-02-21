@@ -1,4 +1,4 @@
-package com.example.bookmyticket.model;
+package com.example.bookmyticket.dao;
 
 import lombok.*;
 

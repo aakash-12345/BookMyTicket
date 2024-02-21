@@ -1,0 +1,2 @@
+payment.session.timeout=300000
+polling.frequency=5000

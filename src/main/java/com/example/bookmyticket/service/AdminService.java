@@ -1,8 +1,8 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.data.*;
+import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.dto.*;
-import com.example.bookmyticket.model.*;
+import com.example.bookmyticket.dao.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,27 +1,13 @@
 package com.example.bookmyticket.api;
 
-import com.example.bookmyticket.BookMyTicketApplication;
-import com.example.bookmyticket.BookMyTicketApplicationTests;
 import com.example.bookmyticket.dto.*;
-import com.example.bookmyticket.model.Offer;
-import com.example.bookmyticket.model.Show;
 import com.example.bookmyticket.service.AdminService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

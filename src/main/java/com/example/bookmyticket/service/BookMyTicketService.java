@@ -1,6 +1,6 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.data.*;
+import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.dto.OfferDTO;
 import com.example.bookmyticket.dto.ShowDTO;
 import com.example.bookmyticket.dto.ShowSeatDTO;
@@ -8,7 +8,7 @@ import com.example.bookmyticket.exception.CustomerNotFoundException;
 import com.example.bookmyticket.exception.InvalidBookingException;
 import com.example.bookmyticket.exception.PaymentFailedException;
 import com.example.bookmyticket.exception.SeatUnavailableException;
-import com.example.bookmyticket.model.*;
+import com.example.bookmyticket.dao.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

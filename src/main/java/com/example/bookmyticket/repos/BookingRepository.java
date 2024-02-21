@@ -1,6 +1,6 @@
-package com.example.bookmyticket.data;
+package com.example.bookmyticket.repos;
 
-import com.example.bookmyticket.model.Booking;
+import com.example.bookmyticket.dao.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {

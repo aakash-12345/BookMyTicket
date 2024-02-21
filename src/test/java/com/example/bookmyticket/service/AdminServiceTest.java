@@ -1,11 +1,11 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.data.*;
+import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.dto.*;
-import com.example.bookmyticket.model.Show;
-import com.example.bookmyticket.model.ShowSeat;
-import com.example.bookmyticket.model.Theater;
-import com.example.bookmyticket.model.TheaterSeat;
+import com.example.bookmyticket.dao.Show;
+import com.example.bookmyticket.dao.ShowSeat;
+import com.example.bookmyticket.dao.Theater;
+import com.example.bookmyticket.dao.TheaterSeat;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,11 @@
 package com.example.bookmyticket.scheduler;
 
-import com.example.bookmyticket.data.BookingRepository;
-import com.example.bookmyticket.data.ShowSeatRepository;
-import com.example.bookmyticket.model.Booking;
-import com.example.bookmyticket.model.ShowSeat;
+import com.example.bookmyticket.repos.BookingRepository;
+import com.example.bookmyticket.repos.ShowSeatRepository;
+import com.example.bookmyticket.dao.Booking;
+import com.example.bookmyticket.dao.ShowSeat;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,8 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RemoveExpiredReservations {
 
+    @Getter
     @Value("${payment.session.timeout}")
-    private Integer sessionTimeout;
+    private Integer sessionTimeout=300000;
 
     private final ShowSeatRepository showSeatRepository;
 
@@ -36,7 +39,7 @@ public class RemoveExpiredReservations {
             //if now() - reservationTime > SESSION_TIMEOUT then status="" and delete Booking
             List<Booking> bookings = new ArrayList<>();
             for (ShowSeat showSeat : pendingShowSeats) {
-                if (Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > sessionTimeout) {
+                if (Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > getSessionTimeout()) {
                     Booking booking = bookingRepository.findById(showSeat.getBookingId()).get();
                     showSeat.setStatus(ShowSeat.BookingStatus.UNRESERVED);
                     showSeat.setBookingId(null);
@@ -47,5 +50,6 @@ public class RemoveExpiredReservations {
             }
             bookingRepository.deleteAll(bookings);
         }
+
     }
 }
