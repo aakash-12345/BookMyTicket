@@ -29,10 +29,9 @@ public class BookMyTicketControllerTest {
     public void testMovieShows() {
         String theaterName = "theater 1";
         String city = "city 1";
-        // When
+
         bookMyTicketController.movieShows(theaterName, city);
 
-        // Then
         verify(bookMyTicketService, times(1)).findAllShowsByTheaterNameAndCity(theaterName, city);
 
     }
@@ -40,10 +39,9 @@ public class BookMyTicketControllerTest {
     @Test
     public void testShowSeats() {
         Long showId = 1L;
-        // When
+
         bookMyTicketController.showSeats(showId);
 
-        // Then
         verify(bookMyTicketService, times(1)).findAllAvailableSeatsForShow(showId);
 
     }
@@ -54,10 +52,9 @@ public class BookMyTicketControllerTest {
                 .showId(1L)
                 .seats(new ArrayList<>())
                 .customerId(1L).build();
-        // When
+
         bookMyTicketController.reserveSeats(bookingRequest);
 
-        // Then
         verify(bookMyTicketService, times(1)).reserveSeats(bookingRequest);
 
     }
@@ -69,20 +66,17 @@ public class BookMyTicketControllerTest {
                 .seats(new ArrayList<>())
                 .customerId(1L).build();
         Long offerId = 1L;
-        // When
+
         bookMyTicketController.confirmSeats(bookingRequest, offerId);
 
-        // Then
         verify(bookMyTicketService, times(1)).confirmSeats(bookingRequest, offerId);
 
     }
 
     @Test
     public void testOfferList() {
-        // When
         bookMyTicketController.offerList();
 
-        // Then
         verify(bookMyTicketService, times(1)).getOfferList();
 
     }

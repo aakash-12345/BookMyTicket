@@ -2,14 +2,12 @@ package com.example.bookmyticket;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-//write tests for the application
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @RequiredArgsConstructor

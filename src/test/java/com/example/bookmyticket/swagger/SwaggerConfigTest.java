@@ -1,6 +1,5 @@
 package com.example.bookmyticket.swagger;
 
-import com.example.bookmyticket.api.AdminController;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,18 +24,14 @@ public class SwaggerConfigTest {
 
     @Test
     public void testPublicApi() {
-        // Mock the behavior of swaggerProperties
         when(swaggerProperties.getGroup()).thenReturn("testGroup");
         when(swaggerProperties.getPackagesToScan()).thenReturn("com.example");
         when(swaggerProperties.getDisplayName()).thenReturn("Test API");
 
-        // Create an instance of the class that contains the publicApi method
         SwaggerConfig instance = new SwaggerConfig();
 
-        // Call the method to be tested
         GroupedOpenApi result = instance.publicApi(swaggerProperties);
 
-        // Assert the result
         assertEquals("testGroup", result.getGroup());
         assertEquals("com.example", result.getPackagesToScan().get(0));
         assertEquals("Test API", result.getDisplayName());
@@ -44,7 +39,6 @@ public class SwaggerConfigTest {
 
     @Test
     public void testOpenApi() {
-        // Mock the behavior of swaggerProperties
         when(swaggerProperties.getApiTitle()).thenReturn("Test API");
         when(swaggerProperties.getApiDescription()).thenReturn("Test Description");
         when(swaggerProperties.getApiVersion()).thenReturn("1.0");
@@ -56,13 +50,10 @@ public class SwaggerConfigTest {
         when(swaggerProperties.getExternalDocDescription()).thenReturn("External Doc Description");
         when(swaggerProperties.getExternalDocUrl()).thenReturn("http://external-doc-url.com");
 
-        // Create an instance of the class that contains the openApi method
         SwaggerConfig instance = new SwaggerConfig();
 
-        // Call the method to be tested
         OpenAPI result = instance.openApi(swaggerProperties);
 
-        // Assert the result
         assertEquals("Test API", result.getInfo().getTitle());
         assertEquals("Test Description", result.getInfo().getDescription());
         assertEquals("1.0", result.getInfo().getVersion());

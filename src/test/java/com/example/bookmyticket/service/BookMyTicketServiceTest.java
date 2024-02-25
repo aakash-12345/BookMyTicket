@@ -58,11 +58,10 @@ public class BookMyTicketServiceTest {
 
     @Test
     public void testFindAllShowsByTheaterNameAndCity() {
-        // Given
         String theaterName = "SampleTheater";
         String city = "SampleCity";
 
-        List<Theater> theaterList = new ArrayList<>(); // Add sample theaters to the list
+        List<Theater> theaterList = new ArrayList<>();
         Theater theaterNew = new Theater();
         theaterNew.setTheaterId(1L);
         theaterNew.setTheaterName("theaterName");
@@ -81,33 +80,25 @@ public class BookMyTicketServiceTest {
                 .runTime(165L)
                 .movieId(1L)
                 .build();
-        sampleShows.add(showNew);// Add sample shows to the list
+        sampleShows.add(showNew);
 
-        // Mock behavior of theaterRepository
         when(theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city)).thenReturn(theaterList);
 
-        // Mock behavior of showRepository
         for (Theater theater : theaterList) {
             when(showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate)).thenReturn(sampleShows);
         }
 
-        // Mock behavior of movieRepository
         for (Show show : sampleShows) {
-            when(movieRepository.findById(show.getMovieId())).thenReturn(Optional.of(new Movie())); // Replace 'new Movie()' with a sample Movie object
+            when(movieRepository.findById(show.getMovieId())).thenReturn(Optional.of(new Movie()));
         }
 
-        // When
         List<ShowDTO> result = bookMyTicketService.findAllShowsByTheaterNameAndCity(theaterName, city);
 
-        // Then
-        // Add assertions based on the expected result
-        // For example, verify that the result contains the expected ShowDTO objects
     }
 
     @Test
     void testFindAllAvailableSeatsForShow() {
-        // Arrange
-        Long validShowId = 123L; // Replace with a valid show ID
+        Long validShowId = 123L;
         List<ShowSeat> availableShowSeats = new ArrayList<>();
         ShowSeat showSeat1 = ShowSeat.builder()
                 .showSeatId(1L)
@@ -117,26 +108,23 @@ public class BookMyTicketServiceTest {
                 .showId(validShowId)
                 .status(ShowSeat.BookingStatus.UNRESERVED)
                 .build();
-        availableShowSeats.add(showSeat1);// Create available ShowSeat objects
+        availableShowSeats.add(showSeat1);
         when(showSeatRepository.findAllByShowIdAndStatus(validShowId, ShowSeat.BookingStatus.UNRESERVED))
-                .thenReturn(availableShowSeats); // Mock showSeatRepository findAllByShowIdAndStatus
+                .thenReturn(availableShowSeats);
 
-        // Act
         List<ShowSeatDTO> result = bookMyTicketService.findAllAvailableSeatsForShow(validShowId);
 
-        // Assert
         assertEquals(availableShowSeats.size(), result.size());
     }
 
     @Test
     public void testReserveSeats() {
-        // Create a BookingRequest object for testing
+
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);
         bookingRequest.setShowId(1L);
 
-        // Mock the behavior of showSeatRepository.findAllByShowSeatIdIn method
         List<ShowSeat> mockShowSeats = new ArrayList<>();
         for (Long seatId : bookingRequest.getSeats()) {
             ShowSeat showSeat = new ShowSeat();
@@ -154,10 +142,9 @@ public class BookMyTicketServiceTest {
                 .reservationDate(LocalDateTime.now())
                 .bookingId(1L)
                 .build();
-        // Add mock behavior for showSeatRepository.findAllByShowSeatIdIn to return the expected showSeats
+
         when(showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        // Mock the behavior of customerRepository.findById method
         Customer mockCustomer = new Customer(1L, "customerName");
         when(customerRepository.findById(bookingRequest.getCustomerId())).thenReturn(Optional.of(mockCustomer));
 
@@ -167,43 +154,36 @@ public class BookMyTicketServiceTest {
                 .seatType("Basic")
                 .theaterId(100L)
                 .build();
-        // Mock the behavior of theaterSeatRepository.findById method
+
         when(theaterSeatRepository.findById(mockShowSeats.get(0).getTheaterSeatId())).thenReturn(Optional.of(theaterSeat));
 
-        // Mock the behavior of bookingRepository.save method
         when(bookingRepository.save(booking)).thenReturn(new Booking());
 
-        // Call the method under test
         String result = bookMyTicketService.reserveSeats(bookingRequest);
 
-        // Verify the expected result
         assertEquals("Reservation Successful.", result);
     }
 
     @Test
     public void testReserveSeats_SeatUnavailable() {
-        // Create a BookingRequest object for testing
-        BookingRequest bookingRequest = new BookingRequest(/* Add necessary parameters */);
 
-        // Mock the behavior of showSeatRepository.findAllByShowSeatIdIn method to return unavailable seats
+        BookingRequest bookingRequest = new BookingRequest();
+
         when(showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats())).thenReturn(new ArrayList<>());
 
-        // Call the method under test
         String result = bookMyTicketService.reserveSeats(bookingRequest);
 
-        // Verify the expected result
         assertEquals("Seats Unavailable.", result);
     }
 
     @Test
     public void testReserveSeats_CustomerNotFound() {
-        // Create a BookingRequest object for testing
+
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);
         bookingRequest.setShowId(1L);
 
-        // Mock the behavior of showSeatRepository.findAllByShowSeatIdIn method
         List<ShowSeat> mockShowSeats = new ArrayList<>();
         for (Long seatId : bookingRequest.getSeats()) {
             ShowSeat showSeat = new ShowSeat();
@@ -213,29 +193,25 @@ public class BookMyTicketServiceTest {
             showSeat.setStatus(ShowSeat.BookingStatus.UNRESERVED);
             mockShowSeats.add(showSeat);
         }
-        // Add mock behavior for showSeatRepository.findAllByShowSeatIdIn to return the expected showSeats
+
         when(showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        // Mock the behavior of customerRepository.findById method to return empty optional
         when(customerRepository.findById(bookingRequest.getCustomerId())).thenReturn(Optional.empty());
 
-        // Call the method under test
         String result = bookMyTicketService.reserveSeats(bookingRequest);
 
-        // Verify the expected result
         assertEquals("Customer Not Found.", result);
     }
 
     @Test
     public void testConfirmSeats_Successful() {
-        // Create a BookingRequest object and offerId for testing
-        BookingRequest bookingRequest = new BookingRequest(/* Add necessary parameters */);
+
+        BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);
         bookingRequest.setShowId(1L);
-        Long offerId = 1L; // Replace with a valid offer ID
+        Long offerId = 1L;
 
-        // Mock the behavior of showSeatRepository.findAllById method
         List<ShowSeat> mockShowSeats = new ArrayList<>();
         for (Long seatId : bookingRequest.getSeats()) {
             ShowSeat showSeat = new ShowSeat();
@@ -259,15 +235,13 @@ public class BookMyTicketServiceTest {
                 .seatType("Basic")
                 .theaterId(100L)
                 .build();
-        // Mock the behavior of theaterSeatRepository.findById method
+
         when(theaterSeatRepository.findById(mockShowSeats.get(0).getTheaterSeatId())).thenReturn(Optional.of(theaterSeat));
-        // Add mock behavior for showSeatRepository.findAllById to return the expected showSeats
+
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        // Mock the behavior of bookingRepository.findById method
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
-        // Mock the behavior of offerRepository.findById method
         Offer mockOffer = Offer.builder()
                 .offerName("offerName")
                 .offerDiscount(BigDecimal.valueOf(0.2))
@@ -276,23 +250,20 @@ public class BookMyTicketServiceTest {
                 .offerId(1L).build();
         when(offerRepository.findById(offerId)).thenReturn(Optional.of(mockOffer));
 
-        // Call the method under test
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
-        // Verify the expected result
         assertEquals("Expected confirmation message", result);
     }
 
     @Test
     public void testConfirmSeats_SeatUnavailable() {
-        // Create a BookingRequest object and offerId for testing
-        BookingRequest bookingRequest = new BookingRequest(/* Add necessary parameters */);
+
+        BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);
         bookingRequest.setShowId(1L);
-        Long offerId = 1L; // Replace with a valid offer ID
+        Long offerId = 1L;
 
-        // Mock the behavior of showSeatRepository.findAllById method
         List<ShowSeat> mockShowSeats = new ArrayList<>();
         for (Long seatId : bookingRequest.getSeats()) {
             ShowSeat showSeat = new ShowSeat();
@@ -303,27 +274,21 @@ public class BookMyTicketServiceTest {
             mockShowSeats.add(showSeat);
         }
 
-
-        // Mock the behavior of showSeatRepository.findAllById method to return unavailable seats
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        // Call the method under test
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
-        // Verify the expected result
         assertEquals("Seats Unavailable.", result);
     }
 
     @Test
     public void testConfirmSeats_InvalidBooking() {
-        // Create a BookingRequest object and offerId for testing
-        BookingRequest bookingRequest = new BookingRequest(/* Add necessary parameters */);
+        BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);
         bookingRequest.setShowId(1L);
-        Long offerId = 1L; // Replace with a valid offer ID
+        Long offerId = 1L;
 
-        // Mock the behavior of showSeatRepository.findAllById method
         List<ShowSeat> mockShowSeats = new ArrayList<>();
         for (Long seatId : bookingRequest.getSeats()) {
             ShowSeat showSeat = new ShowSeat();
@@ -343,20 +308,17 @@ public class BookMyTicketServiceTest {
                 .bookingId(2L)
                 .build();
 
-        // Mock the behavior to simulate an invalid booking scenario
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
-        when(bookingRepository.findById(any())).thenReturn(Optional.of(booking)); // Mock a different customer ID
+        when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
-        // Call the method under test
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
-        // Verify the expected result
         assertEquals("Invalid Booking.", result);
     }
 
     @Test
-public void testGetOfferList() {
-        // Arrange
+    public void testGetOfferList() {
+
         List<OfferDTO> validOffersDTO = new ArrayList<>();
         OfferDTO offerDTO = OfferDTO.builder()
                 .offerId(1L)
@@ -375,13 +337,11 @@ public void testGetOfferList() {
                 .offerStartDate(LocalDate.now())
                 .offerEndDate(LocalDate.now().plusDays(10))
                 .build();
-        validOffers.add(offer);// Create valid Offer objects
-        when(offerRepository.findAllValidOffers(LocalDate.now())).thenReturn(validOffers); // Mock offerRepository findAll
+        validOffers.add(offer);
+        when(offerRepository.findAllValidOffers(LocalDate.now())).thenReturn(validOffers);
 
-        // Act
         List<OfferDTO> result = bookMyTicketService.getOfferList();
 
-        // Assert
         assertEquals(validOffersDTO, result);
     }
 }

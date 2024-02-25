@@ -78,13 +78,10 @@ public class BookMyTicketService {
     }
 
     @Transactional
-    // Need transaction as we are updating many tables : BOOKING, SHOW_SEAT
     public String reserveSeats(BookingRequest bookingRequest) {
         List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
-        //This locks all showseats to be booked for customer
         try {
             validateReservation(showSeats);
-            //all seats available for reservation
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
             Booking booking = Booking.builder()
                     .customerId(customer.getCustomerId())
@@ -124,7 +121,6 @@ public class BookMyTicketService {
     }
 
     @Transactional
-    //called once payment is done or session times out
     public String confirmSeats(BookingRequest bookingRequest, Long offerId) {
         List<ShowSeat> showSeats = showSeatRepository.findAllById(bookingRequest.getSeats());
         try {
@@ -167,7 +163,6 @@ public class BookMyTicketService {
 
     public void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
         try {
-            //paymentGatewayCall
             for (ShowSeat showSeat : showSeats) {
                 showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
             }

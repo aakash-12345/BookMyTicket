@@ -33,10 +33,8 @@ public class RemoveExpiredReservations {
     @Transactional
     @Scheduled(fixedRateString = "${polling.frequency}")
     public void removeExpiredReservations() {
-        //fetch all PENDING ShowSeats
         List<ShowSeat> pendingShowSeats = showSeatRepository.findAllByStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
         if (!CollectionUtils.isEmpty(pendingShowSeats)) {
-            //if now() - reservationTime > SESSION_TIMEOUT then status="" and delete Booking
             List<Booking> bookings = new ArrayList<>();
             for (ShowSeat showSeat : pendingShowSeats) {
                 if (Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > getSessionTimeout()) {
