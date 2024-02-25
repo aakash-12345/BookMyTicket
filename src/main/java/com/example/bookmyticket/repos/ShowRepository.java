@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ShowRepository extends JpaRepository<Show, Long> {
-    @Query("select Show from Show where theaterId = :theaterId and showDate between :currDate and :lastAvailableDate")
+    @Query("select s from Show s where s.theaterId = ?1 and s.showDate between ?2 and ?3")
     List<Show> findAllShowsInRange(Long theaterId, LocalDate currDate, LocalDate lastAvailableDate);
 
 }

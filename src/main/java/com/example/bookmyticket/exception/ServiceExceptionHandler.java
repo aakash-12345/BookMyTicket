@@ -22,21 +22,21 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
         return handleException(ex);
     }
 
-    @ExceptionHandler(CustomerNotFoundException.class)
+    @ExceptionHandler(InvalidBookingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleInvalidBookingException(InvalidBookingException ex) {
         return handleException(ex);
     }
 
-    @ExceptionHandler(CustomerNotFoundException.class)
+    @ExceptionHandler(PaymentFailedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handlePaymentFailedException(PaymentFailedException ex) {
         return handleException(ex);
     }
 
-    @ExceptionHandler(CustomerNotFoundException.class)
+    @ExceptionHandler(SeatUnavailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleSeatUnavailableException(SeatUnavailableException ex) {

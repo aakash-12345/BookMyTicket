@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface OfferRepository extends JpaRepository<Offer, Long> {
 
-    @Query("select Offer from Offer where :currDate between offerStartDate and offerEndDate")
+    @Query("select o from Offer o where ?1 between o.offerStartDate and o.offerEndDate")
     List<Offer> findAllValidOffers(LocalDate currDate);
 
 }
