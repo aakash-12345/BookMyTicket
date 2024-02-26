@@ -10,6 +10,8 @@ import com.example.bookmyticket.exception.PaymentFailedException;
 import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.dao.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.var;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class BookMyTicketService {
 
     public static final String BOOKING_CONFIRMED = "Booking Confirmed.";
@@ -55,7 +58,8 @@ public class BookMyTicketService {
         LocalDate lastAvailableDate = currDate.minusDays(14);
         List<Show> shows = new ArrayList<>();
         theaterList.forEach(theater -> {
-            shows.addAll(showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate));
+            final var listOfShows = showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate);
+            shows.addAll(listOfShows);
         });
 
         return shows.stream().map(show -> ShowDTO.builder()
