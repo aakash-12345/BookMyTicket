@@ -35,7 +35,6 @@ public class RemoveExpiredReservations {
     public void removeExpiredReservations() {
         List<ShowSeat> pendingShowSeats = showSeatRepository.findAllByStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
         if (!CollectionUtils.isEmpty(pendingShowSeats)) {
-            List<Booking> bookings = new ArrayList<>();
             for (ShowSeat showSeat : pendingShowSeats) {
                 if (Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > getSessionTimeout()) {
                     Booking booking = bookingRepository.findById(showSeat.getBookingId()).get();
@@ -43,10 +42,11 @@ public class RemoveExpiredReservations {
                     showSeat.setBookingId(null);
                     showSeat.setReservationTime(null);
                     showSeatRepository.save(showSeat);
-                    bookings.add(booking);
+                    booking.setIsCancelled(true);
+                    bookingRepository.save(booking);
                 }
             }
-            bookingRepository.deleteAll(bookings);
+
         }
 
     }

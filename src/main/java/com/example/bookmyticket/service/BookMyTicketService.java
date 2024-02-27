@@ -52,6 +52,8 @@ public class BookMyTicketService {
 
     private final OfferRepository offerRepository;
 
+    private final RefundRepository refundRepository;
+
     public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
         List<Theater> theaterList = theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city);
         LocalDate currDate = LocalDate.now();
@@ -92,7 +94,8 @@ public class BookMyTicketService {
                     .totalAmount(getPaymentAmount(showSeats))
                     .showId(showSeats.get(0).getShowId())
                     .theaterId(theaterSeatRepository.findById(showSeats.get(0).getTheaterSeatId()).get().getTheaterId())
-                    .reservationDate(LocalDateTime.now()).build();
+                    .reservationDate(LocalDateTime.now())
+                    .isCancelled(false).build();
             bookingRepository.save(booking);
             for (ShowSeat showSeat : showSeats) {
                 showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
@@ -124,7 +127,6 @@ public class BookMyTicketService {
         }
     }
 
-    @Transactional
     public String confirmSeats(BookingRequest bookingRequest, Long offerId) {
         List<ShowSeat> showSeats = showSeatRepository.findAllById(bookingRequest.getSeats());
         try {
@@ -165,11 +167,27 @@ public class BookMyTicketService {
         return total;
     }
 
+    @Transactional
     public void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
         try {
-            for (ShowSeat showSeat : showSeats) {
-                showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
+            // Payment Gateway Integration
+            List<ShowSeat> checkeReservedSeatList = showSeatRepository.findAllByShowSeatIdInAndStatus(showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList()), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
+            if (checkeReservedSeatList.size() != showSeats.size()) {
+                refundRepository.save(Refund.builder()
+                        .bookingId(booking.getBookingId())
+                        .build());
+                booking.setIsCancelled(true);
+                bookingRepository.save(booking);
+                throw new SeatUnavailableException("Seat is already confirmed. Please try again. Payment will be refunded in 2 business days");
             }
+            for (ShowSeat showSeat : showSeats) {
+                    showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
+                    showSeat.setBookingId(booking.getBookingId());
+                    showSeat.setReservationTime(LocalDateTime.now());
+            }
+            booking.setIsCancelled(false);
+            bookingRepository.save(booking);
+            showSeatRepository.saveAll(showSeats);
         } catch (Exception e) {
             throw new PaymentFailedException(e.getMessage());
         }
