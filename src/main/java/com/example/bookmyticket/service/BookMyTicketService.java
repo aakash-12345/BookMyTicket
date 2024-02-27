@@ -127,6 +127,7 @@ public class BookMyTicketService {
         }
     }
 
+    @Transactional
     public String confirmSeats(BookingRequest bookingRequest, Long offerId) {
         List<ShowSeat> showSeats = showSeatRepository.findAllById(bookingRequest.getSeats());
         try {
