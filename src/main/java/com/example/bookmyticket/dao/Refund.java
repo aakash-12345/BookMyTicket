@@ -20,5 +20,6 @@ public class Refund {
     @SequenceGenerator(name = "refund_seq", sequenceName = "refund_seq", initialValue = 1, allocationSize = 1)
     private Long refundId;
     private Long bookingId;
+    private Boolean isRefunded;
 
 }

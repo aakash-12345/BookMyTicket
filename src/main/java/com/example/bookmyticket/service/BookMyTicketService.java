@@ -175,15 +175,16 @@ public class BookMyTicketService {
             if (checkeReservedSeatList.size() != showSeats.size()) {
                 refundRepository.save(Refund.builder()
                         .bookingId(booking.getBookingId())
+                        .isRefunded(false)
                         .build());
                 booking.setIsCancelled(true);
                 bookingRepository.save(booking);
                 throw new SeatUnavailableException("Seat is already confirmed. Please try again. Payment will be refunded in 2 business days");
             }
             for (ShowSeat showSeat : showSeats) {
-                    showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
-                    showSeat.setBookingId(booking.getBookingId());
-                    showSeat.setReservationTime(LocalDateTime.now());
+                showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
+                showSeat.setBookingId(booking.getBookingId());
+                showSeat.setReservationTime(LocalDateTime.now());
             }
             booking.setIsCancelled(false);
             bookingRepository.save(booking);
