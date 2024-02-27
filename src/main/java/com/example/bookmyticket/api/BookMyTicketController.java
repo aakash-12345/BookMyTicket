@@ -33,7 +33,8 @@ public class BookMyTicketController {
     }
 
     @PostMapping(path = "/confirmSeats")
-    public String confirmSeats(@RequestBody BookingRequest bookingRequest, @RequestParam(value = "offerId") Long offerId) {
+    public String confirmSeats(@RequestBody BookingRequest bookingRequest, @RequestParam(value = "offerId", required = false) Long offerId) {
+        offerId = offerId == null ? 0 : offerId;
         return bookMyTicketService.confirmSeats(bookingRequest, offerId);
     }
 

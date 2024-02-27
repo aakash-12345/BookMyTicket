@@ -57,7 +57,7 @@ public class BookMyTicketService {
     public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
         List<Theater> theaterList = theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city);
         LocalDate currDate = LocalDate.now();
-        LocalDate lastAvailableDate = currDate.minusDays(14);
+        LocalDate lastAvailableDate = currDate.plusDays(14);
         List<Show> shows = new ArrayList<>();
         theaterList.forEach(theater -> {
             final var listOfShows = showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate);
@@ -102,6 +102,7 @@ public class BookMyTicketService {
                 showSeat.setReservationTime(LocalDateTime.now());
                 showSeat.setBookingId(booking.getBookingId());
             }
+            showSeatRepository.saveAll(showSeats);
             return RESERVATION_SUCCESSFUL;
         } catch (SeatUnavailableException e) {
             return SEATS_UNAVAILABLE;
@@ -164,7 +165,9 @@ public class BookMyTicketService {
         for (ShowSeat showSeat : showSeats) {
             total = total.add(theaterSeatRepository.findById(showSeat.getTheaterSeatId()).get().getSeatPrice());
         }
-        total = total.multiply(BigDecimal.valueOf(1L).subtract(offerRepository.findById(offerId).get().getOfferDiscount()));
+        if (offerId != 0) {
+            total = total.multiply(BigDecimal.valueOf(1L).subtract(offerRepository.findById(offerId).get().getOfferDiscount()));
+        }
         return total;
     }
 
