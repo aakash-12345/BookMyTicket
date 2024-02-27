@@ -11,4 +11,6 @@ public class MovieDTO {
     private Long movieId;
 
     private String movieName;
+
+    private Long runTime;
 }

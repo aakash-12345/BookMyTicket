@@ -42,6 +42,7 @@ public class AdminService {
     public void addMovies(List<MovieDTO> movies) {
         List<Movie> movieList = movies.stream().map(movieDTO -> Movie.builder()
                 .movieId(movieDTO.getMovieId())
+                .runTime(movieDTO.getRunTime())
                 .movieName(movieDTO.getMovieName()).build()).collect(Collectors.toList());
         movieRepository.saveAll(movieList);
     }
@@ -51,7 +52,6 @@ public class AdminService {
         List<Show> showList = shows.stream().map(show -> Show.builder()
                 .showId(show.getShowId())
                 .showDate(show.getShowDate())
-                .runTime(show.getRunTime())
                 .startTime(show.getStartTime())
                 .movieId(show.getMovieId())
                 .theaterId(show.getTheaterId())

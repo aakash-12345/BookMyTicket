@@ -22,8 +22,6 @@ public class Show {
 
     private String startTime;
 
-    private Long runTime;
-
     private Long movieId;
 
     private Long theaterId;

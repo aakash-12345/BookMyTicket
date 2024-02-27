@@ -84,7 +84,6 @@ public class AdminServiceTest {
                 .movieId(1L)
                 .showId(1L)
                 .theaterId(100L)
-                .runTime(165L)
                 .movieName("MovieName")
                 .showDate(LocalDate.now()).build();
         validShowDTOs.add(showDTO);
@@ -112,6 +111,7 @@ public class AdminServiceTest {
         List<MovieDTO> validMovieDTOs = new ArrayList<>();
         MovieDTO movieDTO = MovieDTO.builder()
                 .movieId(1L)
+                .runTime(165L)
                 .movieName("MovieName").build();
         validMovieDTOs.add(movieDTO);
         when(movieRepository.saveAll(anyIterable())).thenReturn(new ArrayList<>());

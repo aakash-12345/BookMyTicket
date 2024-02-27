@@ -78,7 +78,6 @@ public class BookMyTicketServiceTest {
                 .showDate(LocalDate.now())
                 .theaterId(100L)
                 .startTime("10:00")
-                .runTime(165L)
                 .movieId(1L)
                 .build();
         sampleShows.add(showNew);

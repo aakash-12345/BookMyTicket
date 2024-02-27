@@ -70,7 +70,6 @@ public class BookMyTicketService {
                 .startTime(show.getStartTime())
                 .movieId(show.getMovieId())
                 .movieName(movieRepository.findById(show.getMovieId()).get().getMovieName())
-                .runTime(show.getRunTime())
                 .theaterId(show.getTheaterId())
                 .build()).collect(Collectors.toList());
     }
