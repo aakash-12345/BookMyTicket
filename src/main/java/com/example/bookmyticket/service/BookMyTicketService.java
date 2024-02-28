@@ -1,19 +1,23 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.dto.*;
-import com.example.bookmyticket.repos.*;
+import com.example.bookmyticket.dao.*;
+import com.example.bookmyticket.dto.OfferDTO;
+import com.example.bookmyticket.dto.ShowDTO;
+import com.example.bookmyticket.dto.ShowSeatDTOResponse;
+import com.example.bookmyticket.dto.TheaterDTO;
 import com.example.bookmyticket.exception.CustomerNotFoundException;
 import com.example.bookmyticket.exception.InvalidBookingException;
 import com.example.bookmyticket.exception.PaymentFailedException;
 import com.example.bookmyticket.exception.SeatUnavailableException;
-import com.example.bookmyticket.dao.*;
+import com.example.bookmyticket.repos.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,7 +94,7 @@ public class BookMyTicketService {
                 .build()).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public String reserveSeats(BookingRequest bookingRequest) {
         List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
         try {
@@ -104,11 +108,11 @@ public class BookMyTicketService {
                     .reservationDate(LocalDateTime.now())
                     .isCancelled(false).build();
             bookingRepository.save(booking);
-            for (ShowSeat showSeat : showSeats) {
-                showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
-                showSeat.setReservationTime(LocalDateTime.now());
-                showSeat.setBookingId(booking.getBookingId());
-            }
+            showSeats.forEach(showSeatItem -> {
+                showSeatItem.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
+                showSeatItem.setReservationTime(LocalDateTime.now());
+                showSeatItem.setBookingId(booking.getBookingId());
+            });
             showSeatRepository.saveAll(showSeats);
             return RESERVATION_SUCCESSFUL;
         } catch (SeatUnavailableException e) {
