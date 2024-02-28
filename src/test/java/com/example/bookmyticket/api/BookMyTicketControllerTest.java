@@ -1,6 +1,9 @@
 package com.example.bookmyticket.api;
 
 import com.example.bookmyticket.dao.BookingRequest;
+import com.example.bookmyticket.dao.Theater;
+import com.example.bookmyticket.dto.TheaterDTO;
+import com.example.bookmyticket.repos.TheaterRepository;
 import com.example.bookmyticket.service.BookMyTicketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,13 +12,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class BookMyTicketControllerTest {
     @Mock
     private BookMyTicketService bookMyTicketService;
+
+    @Mock
+    private TheaterRepository theaterRepository;
 
     @InjectMocks
     private BookMyTicketController bookMyTicketController;
@@ -37,7 +44,16 @@ public class BookMyTicketControllerTest {
     }
 
     @Test
-    public void testShowSeats() {
+    public void testGetAllTheaters() {
+
+        bookMyTicketController.getAllTheaters();
+
+        verify(bookMyTicketService, times(1)).getAllTheaters();
+
+    }
+
+    @Test
+    public void testAvailableShowSeats() {
         Long showId = 1L;
 
         bookMyTicketController.availableShowSeats(showId);

@@ -16,9 +16,13 @@ public class BookMyTicketController {
     private final BookMyTicketService bookMyTicketService;
 
     @GetMapping(path = "/movieShows")
-    public List<ShowDTO> movieShows(@RequestParam(value = "theaterName") String theaterName, @RequestParam(value = "city") String city) {
+    public List<ShowDTO> movieShows(
+            @RequestParam(value = "theaterName") String theaterName,
+            @RequestParam(value = "city") String city
+    ) {
         return bookMyTicketService.findAllShowsByTheaterNameAndCity(theaterName, city);
     }
+
     @GetMapping(path = "/getAllTheaters")
     public List<TheaterDTO> getAllTheaters() {
         return bookMyTicketService.getAllTheaters();
@@ -35,7 +39,10 @@ public class BookMyTicketController {
     }
 
     @PostMapping(path = "/confirmSeats")
-    public String confirmSeats(@RequestBody BookingRequest bookingRequest, @RequestParam(value = "offerId", required = false) Long offerId) {
+    public String confirmSeats(
+            @RequestBody BookingRequest bookingRequest,
+            @RequestParam(value = "offerId", required = false) Long offerId
+    ) {
         offerId = offerId == null ? 0 : offerId;
         return bookMyTicketService.confirmSeats(bookingRequest, offerId);
     }
