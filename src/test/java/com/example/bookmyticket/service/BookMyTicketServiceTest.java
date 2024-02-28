@@ -1,10 +1,7 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.dto.ShowSeatDTOResponse;
+import com.example.bookmyticket.dto.*;
 import com.example.bookmyticket.repos.*;
-import com.example.bookmyticket.dto.OfferDTO;
-import com.example.bookmyticket.dto.ShowDTO;
-import com.example.bookmyticket.dto.ShowSeatDTO;
 import com.example.bookmyticket.dao.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,9 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyIterable;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class BookMyTicketServiceTest {
@@ -33,6 +31,9 @@ public class BookMyTicketServiceTest {
 
     @Mock
     private ShowRepository showRepository;
+
+    @Mock
+    private RefundRepository refundRepository;
 
     @Mock
     private TheaterSeatRepository theaterSeatRepository;
@@ -63,15 +64,13 @@ public class BookMyTicketServiceTest {
         String theaterName = "SampleTheater";
         String city = "SampleCity";
 
-        List<Theater> theaterList = new ArrayList<>();
         Theater theaterNew = new Theater();
         theaterNew.setTheaterId(1L);
         theaterNew.setTheaterName("theaterName");
         theaterNew.setTheaterCity("city");
-        theaterList.add(theaterNew);
 
         LocalDate currDate = LocalDate.now();
-        LocalDate lastAvailableDate = currDate.minusDays(14);
+        LocalDate availableDate = currDate.plusDays(14);
 
         List<Show> sampleShows = new ArrayList<>();
         Show showNew = Show.builder()
@@ -82,19 +81,40 @@ public class BookMyTicketServiceTest {
                 .movieId(1L)
                 .build();
         sampleShows.add(showNew);
+        when(theaterRepository.findByTheaterNameAndTheaterCity(theaterName, city)).thenReturn(Optional.of(theaterNew));
 
-        when(theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city)).thenReturn(theaterList);
 
-        for (Theater theater : theaterList) {
-            when(showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate)).thenReturn(sampleShows);
-        }
+        when(showRepository.findAllShowsInRange(theaterNew.getTheaterId(), currDate, availableDate)).thenReturn(sampleShows);
+
 
         for (Show show : sampleShows) {
-            when(movieRepository.findById(show.getMovieId())).thenReturn(Optional.of(new Movie()));
+            when(movieRepository.findById(show.getMovieId())).thenReturn(Optional.of(new Movie(1L, "movie1", 165L)));
         }
 
         List<ShowDTO> result = bookMyTicketService.findAllShowsByTheaterNameAndCity(theaterName, city);
 
+        assertEquals(sampleShows.size(), result.size());
+
+    }
+
+    @Test
+    void getAllTheaters() {
+        List<Theater> theaters = new ArrayList<>();
+        Theater theater = Theater.builder()
+                .theaterId(1L)
+                .theaterName("theaterName")
+                .theaterCity("city").build();
+        theaters.add(theater);
+
+        List<TheaterDTO> theaterDTOs = new ArrayList<>();
+        TheaterDTO theaterDTO = TheaterDTO.builder()
+                .theaterId(1L)
+                .theaterName("theaterName")
+                .theaterCity("city").build();
+        theaterDTOs.add(theaterDTO);
+        when(theaterRepository.findAll()).thenReturn(theaters);
+        List<TheaterDTO> result = bookMyTicketService.getAllTheaters();
+        assertEquals(theaterDTOs, result);
     }
 
     @Test
@@ -241,6 +261,8 @@ public class BookMyTicketServiceTest {
 
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
+        when(showSeatRepository.findAllByShowSeatIdInAndStatus(bookingRequest.getSeats(), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING)).thenReturn(mockShowSeats);
+
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
         Offer mockOffer = Offer.builder()
@@ -254,6 +276,60 @@ public class BookMyTicketServiceTest {
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
         assertTrue(result.startsWith(BookMyTicketService.BOOKING_CONFIRMED));
+    }
+
+    @Test
+    public void testConfirmSeats_Failed_In_Concurrency() {
+
+        BookingRequest bookingRequest = new BookingRequest();
+        bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
+        bookingRequest.setCustomerId(1L);
+        bookingRequest.setShowId(1L);
+        Long offerId = 1L;
+
+        List<ShowSeat> mockShowSeats = new ArrayList<>();
+        for (Long seatId : bookingRequest.getSeats()) {
+            ShowSeat showSeat = new ShowSeat();
+            showSeat.setShowSeatId(seatId);
+            showSeat.setShowId(1L);
+            showSeat.setTheaterSeatId(1L);
+            showSeat.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
+            mockShowSeats.add(showSeat);
+        }
+        Booking booking = Booking.builder()
+                .customerId(1L)
+                .totalAmount(BigDecimal.valueOf(100))
+                .showId(1L)
+                .theaterId(1L)
+                .reservationDate(LocalDateTime.now())
+                .bookingId(1L)
+                .build();
+        TheaterSeat theaterSeat = TheaterSeat.builder()
+                .theaterSeatId(1L)
+                .seatPrice(BigDecimal.valueOf(100L))
+                .seatType("Basic")
+                .theaterId(100L)
+                .build();
+
+        when(theaterSeatRepository.findById(mockShowSeats.get(0).getTheaterSeatId())).thenReturn(Optional.of(theaterSeat));
+
+        when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
+
+        when(showSeatRepository.findAllByShowSeatIdInAndStatus(bookingRequest.getSeats(), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING)).thenReturn(new ArrayList<>());
+
+        when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
+
+        Offer mockOffer = Offer.builder()
+                .offerName("offerName")
+                .offerDiscount(BigDecimal.valueOf(0.2))
+                .offerEndDate(LocalDate.now().plusDays(20))
+                .offerStartDate(LocalDate.now())
+                .offerId(1L).build();
+        when(offerRepository.findById(offerId)).thenReturn(Optional.of(mockOffer));
+
+        String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
+
+        assertFalse(result.startsWith(BookMyTicketService.BOOKING_CONFIRMED));
     }
 
     @Test

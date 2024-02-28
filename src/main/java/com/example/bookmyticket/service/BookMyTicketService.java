@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,24 +58,24 @@ public class BookMyTicketService {
     private final RefundRepository refundRepository;
 
     public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
-        //Remove List as only one theater is allowed with same name and city
-        List<Theater> theaterList = theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city);
-        LocalDate currDate = LocalDate.now();
-        LocalDate lastAvailableDate = currDate.plusDays(14);
-        List<Show> shows = new ArrayList<>();
-        theaterList.forEach(theater -> {
-            final var listOfShows = showRepository.findAllShowsInRange(theater.getTheaterId(), currDate, lastAvailableDate);
-            shows.addAll(listOfShows);
-        });
+        try {
+            //Remove List as only one theater is allowed with same name and city
+            Optional<Theater> theater = theaterRepository.findByTheaterNameAndTheaterCity(theaterName, city);
+            LocalDate currDate = LocalDate.now();
+            LocalDate lastAvailableDate = currDate.plusDays(14);
 
-        return shows.stream().map(show -> ShowDTO.builder()
-                .showId(show.getShowId())
-                .showDate(show.getShowDate())
-                .startTime(show.getStartTime())
-                .movieId(show.getMovieId())
-                .movieName(movieRepository.findById(show.getMovieId()).get().getMovieName())
-                .theaterId(show.getTheaterId())
-                .build()).collect(Collectors.toList());
+            return showRepository.findAllShowsInRange(theater.get().getTheaterId(), currDate, lastAvailableDate).stream().map(show -> ShowDTO.builder()
+                    .showId(show.getShowId())
+                    .showDate(show.getShowDate())
+                    .startTime(show.getStartTime())
+                    .movieId(show.getMovieId())
+                    .movieName(movieRepository.findById(show.getMovieId()).get().getMovieName())
+                    .theaterId(show.getTheaterId())
+                    .build()).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error in finding shows by theater name and city", e);
+            return new ArrayList<>();
+        }
     }
 
     public List<TheaterDTO> getAllTheaters() {

@@ -40,7 +40,7 @@ public class BookMyTicketControllerTest {
     public void testShowSeats() {
         Long showId = 1L;
 
-        bookMyTicketController.showSeats(showId);
+        bookMyTicketController.availableShowSeats(showId);
 
         verify(bookMyTicketService, times(1)).findAllAvailableSeatsForShow(showId);
 

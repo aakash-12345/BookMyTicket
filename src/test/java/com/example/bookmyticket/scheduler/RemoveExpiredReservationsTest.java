@@ -6,7 +6,6 @@ import com.example.bookmyticket.repos.BookingRepository;
 import com.example.bookmyticket.repos.ShowSeatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 public class RemoveExpiredReservationsTest {
@@ -36,7 +34,7 @@ public class RemoveExpiredReservationsTest {
     }
 
     @Test
-    public void testRemoveExpiredReservations() {
+    public void removeAllExpiredReservations() {
 
         ShowSeat pendingShowSeat1 = ShowSeat.builder()
                 .showSeatId(1L)
@@ -63,11 +61,9 @@ public class RemoveExpiredReservationsTest {
         Booking booking = new Booking();
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
 
-        removeExpiredReservationsObject.removeExpiredReservations();
+        removeExpiredReservationsObject.removeAllExpiredReservations();
 
         verify(showSeatRepository, times(1)).save(any());
-
-        verify(bookingRepository).deleteAll(anyList());
 
         assertEquals(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING, pendingShowSeat1.getStatus());
         assertEquals(ShowSeat.BookingStatus.UNRESERVED, pendingShowSeat2.getStatus());

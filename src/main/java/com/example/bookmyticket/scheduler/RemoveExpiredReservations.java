@@ -32,7 +32,7 @@ public class RemoveExpiredReservations {
 
     @Transactional
     @Scheduled(fixedRateString = "${polling.frequency}")
-    public void removeExpiredReservations() {
+    public void removeAllExpiredReservations() {
         List<ShowSeat> pendingShowSeats = showSeatRepository.findAllByStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
         if (!CollectionUtils.isEmpty(pendingShowSeats)) {
             for (ShowSeat showSeat : pendingShowSeats) {
