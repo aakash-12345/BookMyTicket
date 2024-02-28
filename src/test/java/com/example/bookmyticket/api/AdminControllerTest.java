@@ -57,8 +57,8 @@ public class AdminControllerTest {
     @Test
     public void testAddMovies() {
         List<MovieDTO> movies = Arrays.asList(
-                new MovieDTO(100L, "movie1"),
-                new MovieDTO(101L, "movie2"));
+                new MovieDTO(100L, "movie1", 165L),
+                new MovieDTO(101L, "movie2", 150L));
 
         adminController.addMovies(movies);
 
@@ -69,8 +69,8 @@ public class AdminControllerTest {
     @Test
     public void testAddShows() {
         List<ShowDTO> shows = Arrays.asList(
-                new ShowDTO(100L, LocalDate.now(), "10:00", 165L, 1L, 1L, "movie1"),
-                new ShowDTO(101L, LocalDate.now(), "14:00", 165L, 1L, 1L, "movie1"));
+                new ShowDTO(100L, LocalDate.now(), "10:00", 1L, 1L, "movie1"),
+                new ShowDTO(101L, LocalDate.now(), "14:00", 1L, 1L, "movie1"));
 
         adminController.addShows(shows);
 

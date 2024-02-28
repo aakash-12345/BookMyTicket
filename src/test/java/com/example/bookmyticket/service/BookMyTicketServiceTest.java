@@ -1,5 +1,6 @@
 package com.example.bookmyticket.service;
 
+import com.example.bookmyticket.dto.ShowSeatDTOResponse;
 import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.dto.OfferDTO;
 import com.example.bookmyticket.dto.ShowDTO;
@@ -112,7 +113,7 @@ public class BookMyTicketServiceTest {
         when(showSeatRepository.findAllByShowIdAndStatus(validShowId, ShowSeat.BookingStatus.UNRESERVED))
                 .thenReturn(availableShowSeats);
 
-        List<ShowSeatDTO> result = bookMyTicketService.findAllAvailableSeatsForShow(validShowId);
+        List<ShowSeatDTOResponse> result = bookMyTicketService.findAllAvailableSeatsForShow(validShowId);
 
         assertEquals(availableShowSeats.size(), result.size());
     }

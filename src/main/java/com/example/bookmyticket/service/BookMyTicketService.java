@@ -1,9 +1,7 @@
 package com.example.bookmyticket.service;
 
+import com.example.bookmyticket.dto.*;
 import com.example.bookmyticket.repos.*;
-import com.example.bookmyticket.dto.OfferDTO;
-import com.example.bookmyticket.dto.ShowDTO;
-import com.example.bookmyticket.dto.ShowSeatDTO;
 import com.example.bookmyticket.exception.CustomerNotFoundException;
 import com.example.bookmyticket.exception.InvalidBookingException;
 import com.example.bookmyticket.exception.PaymentFailedException;
@@ -55,6 +53,7 @@ public class BookMyTicketService {
     private final RefundRepository refundRepository;
 
     public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
+        //Remove List as only one theater is allowed with same name and city
         List<Theater> theaterList = theaterRepository.findAllByTheaterNameAndTheaterCity(theaterName, city);
         LocalDate currDate = LocalDate.now();
         LocalDate lastAvailableDate = currDate.plusDays(14);
@@ -74,11 +73,20 @@ public class BookMyTicketService {
                 .build()).collect(Collectors.toList());
     }
 
-    public List<ShowSeatDTO> findAllAvailableSeatsForShow(Long showId) {
+    public List<TheaterDTO> getAllTheaters() {
+        return theaterRepository.findAll().stream().map(theater -> TheaterDTO.builder()
+                .theaterId(theater.getTheaterId())
+                .theaterName(theater.getTheaterName())
+                .theaterCity(theater.getTheaterCity())
+                .build()).collect(Collectors.toList());
+    }
+
+    public List<ShowSeatDTOResponse> findAllAvailableSeatsForShow(Long showId) {
         List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndStatus(showId, ShowSeat.BookingStatus.UNRESERVED);
-        return showSeats.stream().map(showSeat -> ShowSeatDTO.builder()
+        List<Long> availableshowSeatIdList = showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList());
+        return showSeats.stream().map(showSeat -> ShowSeatDTOResponse.builder()
                 .showId(showSeat.getShowId())
-                .showSeatId(showSeat.getShowSeatId())
+                .availableShowSeatIDs(availableshowSeatIdList)
                 .build()).collect(Collectors.toList());
     }
 
@@ -174,7 +182,10 @@ public class BookMyTicketService {
     public void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
         try {
             // Payment Gateway Integration
-            List<ShowSeat> checkeReservedSeatList = showSeatRepository.findAllByShowSeatIdInAndStatus(showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList()), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
+            List<ShowSeat> checkeReservedSeatList = showSeatRepository.findAllByShowSeatIdInAndStatus(
+                    showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList()),
+                    ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING
+            );
             if (checkeReservedSeatList.size() != showSeats.size()) {
                 refundRepository.save(Refund.builder()
                         .bookingId(booking.getBookingId())
@@ -182,7 +193,9 @@ public class BookMyTicketService {
                         .build());
                 booking.setIsCancelled(true);
                 bookingRepository.save(booking);
-                throw new SeatUnavailableException("Seat is already confirmed. Please try again. Payment will be refunded in 2 business days");
+                throw new SeatUnavailableException(
+                        "Your Reservation Expired. Please try again. Payment will be refunded in 2 business days"
+                );
             }
             for (ShowSeat showSeat : showSeats) {
                 showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
