@@ -12,7 +12,6 @@ import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.repos.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.var;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,7 @@ public class BookMyTicketService {
     public static final String BOOKING_CONFIRMED = "Booking Confirmed.";
     public static final String SEATS_UNAVAILABLE = "Seats Unavailable.";
     public static final String RESERVATION_SUCCESSFUL = "Reservation Successful.";
-    public static final String INVALID_BOOKING = "Invalid Booking.";
+    public static final String INVALID_CUSTOMER_BOOKING = "Invalid Customer Booking.";
     public static final String CUSTOMER_NOT_FOUND = "Customer Not Found.";
     public static final String PAYMENT_FAILED = "Payment is Failed.";
 
@@ -59,12 +58,14 @@ public class BookMyTicketService {
 
     public List<ShowDTO> findAllShowsByTheaterNameAndCity(String theaterName, String city) {
         try {
-            //Remove List as only one theater is allowed with same name and city
+            log.info("Finding shows by theater name {} and city {}", theaterName, city);
             Optional<Theater> theater = theaterRepository.findByTheaterNameAndTheaterCity(theaterName, city);
             LocalDate currDate = LocalDate.now();
             LocalDate lastAvailableDate = currDate.plusDays(14);
+            log.info("Is Theater present by given theater name and city? : {} ", theater.isPresent()? "Yes" : "No");
 
-            return showRepository.findAllShowsInRange(theater.get().getTheaterId(), currDate, lastAvailableDate).stream().map(show -> ShowDTO.builder()
+            return showRepository.findAllShowsInRange(theater.get().getTheaterId(), currDate, lastAvailableDate)
+                    .stream().map(show -> ShowDTO.builder()
                     .showId(show.getShowId())
                     .showDate(show.getShowDate())
                     .startTime(show.getStartTime())
@@ -73,12 +74,13 @@ public class BookMyTicketService {
                     .theaterId(show.getTheaterId())
                     .build()).collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("Error in finding shows by theater name and city", e);
+            log.error("Error in finding shows by theater name {} and city {} : ",theaterName, city, e);
             return new ArrayList<>();
         }
     }
 
     public List<TheaterDTO> getAllTheaters() {
+        log.info("Finding all list of theaters");
         return theaterRepository.findAll().stream().map(theater -> TheaterDTO.builder()
                 .theaterId(theater.getTheaterId())
                 .theaterName(theater.getTheaterName())
@@ -87,8 +89,10 @@ public class BookMyTicketService {
     }
 
     public List<ShowSeatDTOResponse> findAllAvailableSeatsForShow(Long showId) {
+        log.info("Finding all available seats for show id : {}", showId);
         List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndStatus(showId, ShowSeat.BookingStatus.UNRESERVED);
         List<Long> availableshowSeatIdList = showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList());
+        log.info("Number of available seats for show id {} : {}", showId, availableshowSeatIdList.size());
         return showSeats.stream().map(showSeat -> ShowSeatDTOResponse.builder()
                 .showId(showSeat.getShowId())
                 .availableShowSeatIDs(availableshowSeatIdList)
@@ -97,10 +101,14 @@ public class BookMyTicketService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public String reserveSeats(BookingRequest bookingRequest) {
+        log.info("Reserving seats for booking request : {}", bookingRequest);
         List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
         try {
+            log.info("Validating reservation for show seats : {}", bookingRequest.getSeats());
             validateReservation(showSeats);
-            Customer customer = customerRepository.findById(bookingRequest.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
+            log.info("Validating valid customer for booking request : {}", bookingRequest.getCustomerId());
+            Customer customer = customerRepository.findById(bookingRequest.getCustomerId())
+                    .orElseThrow(CustomerNotFoundException::new);
             Booking booking = Booking.builder()
                     .customerId(customer.getCustomerId())
                     .totalAmount(getPaymentAmount(showSeats))
@@ -109,18 +117,23 @@ public class BookMyTicketService {
                     .reservationDate(LocalDateTime.now())
                     .isCancelled(false).build();
             bookingRepository.save(booking);
+            log.info("Booking Saved : {}", booking);
             showSeats.forEach(showSeatItem -> {
                 showSeatItem.setStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
                 showSeatItem.setReservationTime(LocalDateTime.now());
                 showSeatItem.setBookingId(booking.getBookingId());
             });
             showSeatRepository.saveAll(showSeats);
+            log.info("Reservation successful for booking request : {}", bookingRequest);
             return RESERVATION_SUCCESSFUL;
         } catch (SeatUnavailableException e) {
+            log.error("Seats are not available for reservation : {}", bookingRequest.getSeats());
             return SEATS_UNAVAILABLE;
         } catch (CustomerNotFoundException e) {
+            log.error("Customer not found for customer id : {}", bookingRequest.getCustomerId());
             return CUSTOMER_NOT_FOUND;
         } catch (Exception e) {
+            log.error("Error in reserving seats for booking request : {} ", bookingRequest, e);
             return e.getMessage();
         }
 
@@ -135,37 +148,46 @@ public class BookMyTicketService {
     }
 
     private void validateReservation(List<ShowSeat> showSeats) throws SeatUnavailableException {
-        if (CollectionUtils.isEmpty(showSeats) || showSeats.stream().anyMatch(showSeat -> showSeat.getStatus() != ShowSeat.BookingStatus.UNRESERVED)) {
+        if (CollectionUtils.isEmpty(showSeats) ||
+                showSeats.stream().anyMatch(showSeat -> showSeat.getStatus() != ShowSeat.BookingStatus.UNRESERVED)) {
             throw new SeatUnavailableException();
         }
     }
 
     @Transactional
     public String confirmSeats(BookingRequest bookingRequest, Long offerId) {
+        log.info("Confirming seats for booking request : {}", bookingRequest);
         List<ShowSeat> showSeats = showSeatRepository.findAllById(bookingRequest.getSeats());
         try {
+            log.info("Validating seats for confirmation : {}", bookingRequest.getSeats());
             validateSeats(showSeats);
-            validateBooking(showSeats, bookingRequest);
+            log.info("Validating Customer booking for confirmation : {}", bookingRequest.getSeats());
+            validateCustomerBooking(showSeats, bookingRequest);
             Booking booking = bookingRepository.findById(showSeats.get(0).getBookingId()).get();
             booking.setTotalAmount(getFinalPaymentAmount(showSeats, offerId));
+            log.info("Final Payment Amount for bookingId {} is {}", booking.getBookingId(), booking.getTotalAmount());
             doPayment(booking, showSeats);
+            log.info("Seats confirmed successfully for booking request : {}", bookingRequest.getSeats());
             return bookingConfirmedMessage(showSeats);
         } catch (SeatUnavailableException e) {
             return SEATS_UNAVAILABLE;
         } catch (InvalidBookingException e) {
-            return INVALID_BOOKING;
+            return INVALID_CUSTOMER_BOOKING;
         } catch (PaymentFailedException e) {
             return PAYMENT_FAILED;
         }
     }
 
     private String bookingConfirmedMessage(List<ShowSeat> showSeats) {
-        return BOOKING_CONFIRMED + ".\n Your booking ID is : " + showSeats.get(0).getBookingId() + ".\n Your seats : " + showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList());
+        return BOOKING_CONFIRMED + ".\n Your booking ID is : " +
+                showSeats.get(0).getBookingId() + ".\n Your seats : " +
+                showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList());
     }
 
-    private void validateBooking(List<ShowSeat> showSeats, BookingRequest bookingRequest) throws InvalidBookingException {
+    private void validateCustomerBooking(List<ShowSeat> showSeats, BookingRequest bookingRequest) throws InvalidBookingException {
         for (ShowSeat showSeat : showSeats) {
-            if (!Objects.equals(bookingRepository.findById(showSeat.getBookingId()).get().getCustomerId(), bookingRequest.getCustomerId())) {
+            if (!Objects.equals(bookingRepository.findById(showSeat.getBookingId()).get().getCustomerId(),
+                    bookingRequest.getCustomerId())) {
                 throw new InvalidBookingException();
             }
         }
@@ -187,17 +209,20 @@ public class BookMyTicketService {
     public void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
         try {
             // Payment Gateway Integration
-            List<ShowSeat> checkeReservedSeatList = showSeatRepository.findAllByShowSeatIdInAndStatus(
+            log.info("Payment Done Successfully for booking : {}", booking);
+            List<ShowSeat> checkedReservedSeatList = showSeatRepository.findAllByShowSeatIdInAndStatus(
                     showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList()),
                     ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING
             );
-            if (checkeReservedSeatList.size() != showSeats.size()) {
+            if (checkedReservedSeatList.size() != showSeats.size()) {
+                log.info("Reservation Expired, adding refund request for booking : {}", booking.getBookingId());
                 refundRepository.save(Refund.builder()
                         .bookingId(booking.getBookingId())
                         .isRefunded(false)
                         .build());
                 booking.setIsCancelled(true);
                 bookingRepository.save(booking);
+                log.info("Booking cancelled and refund request added for booking : {}", booking.getBookingId());
                 throw new SeatUnavailableException(
                         "Your Reservation Expired. Please try again. Payment will be refunded in 2 business days"
                 );
@@ -210,6 +235,7 @@ public class BookMyTicketService {
             booking.setIsCancelled(false);
             bookingRepository.save(booking);
             showSeatRepository.saveAll(showSeats);
+            log.info("Payment Done and seat confirmed successfully for booking : {}", booking);
         } catch (Exception e) {
             throw new PaymentFailedException(e.getMessage());
         }
@@ -224,6 +250,7 @@ public class BookMyTicketService {
     }
 
     public List<OfferDTO> getOfferList() {
+        log.info("Finding all valid offers");
         List<Offer> offerList = offerRepository.findAllValidOffers(LocalDate.now());
         return offerList.stream().map(offer -> OfferDTO.builder()
                 .offerId(offer.getOfferId())

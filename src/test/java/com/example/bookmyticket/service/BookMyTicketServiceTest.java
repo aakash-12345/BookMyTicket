@@ -390,7 +390,7 @@ public class BookMyTicketServiceTest {
 
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
-        assertEquals("Invalid Booking.", result);
+        assertEquals("Invalid Customer Booking.", result);
     }
 
     @Test
