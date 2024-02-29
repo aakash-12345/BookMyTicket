@@ -1,7 +1,10 @@
 package com.example.bookmyticket.api;
 
-import com.example.bookmyticket.dto.*;
 import com.example.bookmyticket.dao.BookingRequest;
+import com.example.bookmyticket.dto.OfferDTO;
+import com.example.bookmyticket.dto.ShowDTO;
+import com.example.bookmyticket.dto.ShowSeatDTOResponse;
+import com.example.bookmyticket.dto.TheaterDTO;
 import com.example.bookmyticket.service.BookMyTicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

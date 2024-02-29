@@ -1,10 +1,9 @@
 package com.example.bookmyticket.scheduler;
 
-import com.example.bookmyticket.repos.BookingRepository;
-import com.example.bookmyticket.repos.ShowSeatRepository;
 import com.example.bookmyticket.dao.Booking;
 import com.example.bookmyticket.dao.ShowSeat;
-import lombok.Data;
+import com.example.bookmyticket.repos.BookingRepository;
+import com.example.bookmyticket.repos.ShowSeatRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,7 +15,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

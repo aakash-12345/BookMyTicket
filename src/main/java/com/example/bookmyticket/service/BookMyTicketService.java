@@ -62,19 +62,19 @@ public class BookMyTicketService {
             Optional<Theater> theater = theaterRepository.findByTheaterNameAndTheaterCity(theaterName, city);
             LocalDate currDate = LocalDate.now();
             LocalDate lastAvailableDate = currDate.plusDays(14);
-            log.info("Is Theater present by given theater name and city? : {} ", theater.isPresent()? "Yes" : "No");
+            log.info("Is Theater present by given theater name and city? : {} ", theater.isPresent() ? "Yes" : "No");
 
             return showRepository.findAllShowsInRange(theater.get().getTheaterId(), currDate, lastAvailableDate)
                     .stream().map(show -> ShowDTO.builder()
-                    .showId(show.getShowId())
-                    .showDate(show.getShowDate())
-                    .startTime(show.getStartTime())
-                    .movieId(show.getMovieId())
-                    .movieName(movieRepository.findById(show.getMovieId()).get().getMovieName())
-                    .theaterId(show.getTheaterId())
-                    .build()).collect(Collectors.toList());
+                            .showId(show.getShowId())
+                            .showDate(show.getShowDate())
+                            .startTime(show.getStartTime())
+                            .movieId(show.getMovieId())
+                            .movieName(movieRepository.findById(show.getMovieId()).get().getMovieName())
+                            .theaterId(show.getTheaterId())
+                            .build()).collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("Error in finding shows by theater name {} and city {} : ",theaterName, city, e);
+            log.error("Error in finding shows by theater name {} and city {} : ", theaterName, city, e);
             return new ArrayList<>();
         }
     }
