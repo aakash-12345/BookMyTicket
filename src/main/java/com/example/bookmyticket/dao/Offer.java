@@ -16,7 +16,7 @@ public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offer_seq")
     @SequenceGenerator(name = "offer_seq", sequenceName = "offer_seq", initialValue = 1, allocationSize = 1)
-    @Column(name = "id", nullable = false)
+    @Column(name = "OFFER_ID", nullable = false)
     private Long offerId;
     private String offerName;
     private BigDecimal offerDiscount;

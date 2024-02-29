@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ShowSeat {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "SHOW_SEAT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "showseat_seq")
     @SequenceGenerator(name = "showseat_seq", sequenceName = "showseat_seq", initialValue = 1, allocationSize = 1)
     private Long showSeatId;

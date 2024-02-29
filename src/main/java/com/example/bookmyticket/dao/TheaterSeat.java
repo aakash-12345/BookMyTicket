@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class TheaterSeat {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "THEATER_SEAT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "theaterseat_seq")
     @SequenceGenerator(name = "theaterseat_seq", sequenceName = "theaterseat_seq", initialValue = 1, allocationSize = 1)
     private Long theaterSeatId;

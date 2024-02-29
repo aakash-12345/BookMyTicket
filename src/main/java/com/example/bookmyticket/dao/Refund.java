@@ -15,7 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Refund {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "REFUND_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "refund_seq")
     @SequenceGenerator(name = "refund_seq", sequenceName = "refund_seq", initialValue = 1, allocationSize = 1)
     private Long refundId;

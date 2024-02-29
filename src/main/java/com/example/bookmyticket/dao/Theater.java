@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Theater {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "THEATER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "theater_seq")
     @SequenceGenerator(name = "theater_seq", sequenceName = "theater_seq", initialValue = 1, allocationSize = 1)
     private Long theaterId;

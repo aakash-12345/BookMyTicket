@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Customer {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "CUSTOMER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
     @SequenceGenerator(name = "customer_seq", sequenceName = "customer_seq", initialValue = 1, allocationSize = 1)
     private Long customerId;

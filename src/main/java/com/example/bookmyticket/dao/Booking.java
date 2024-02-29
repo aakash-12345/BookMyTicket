@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Booking {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "BOOKING_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_seq")
     @SequenceGenerator(name = "booking_seq", sequenceName = "booking_seq", initialValue = 1, allocationSize = 1)
     private Long bookingId;
