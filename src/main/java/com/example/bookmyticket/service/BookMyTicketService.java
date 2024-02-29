@@ -170,11 +170,17 @@ public class BookMyTicketService {
             log.info("Seats confirmed successfully for booking request : {}", bookingRequest.getSeats());
             return bookingConfirmedMessage(showSeats);
         } catch (SeatUnavailableException e) {
+            log.error("Seats are not available for confirmation : {}", bookingRequest);
             return SEATS_UNAVAILABLE;
         } catch (InvalidBookingException e) {
+            log.error("Invalid Customer Booking for booking request id : {}", showSeats.get(0).getBookingId());
             return INVALID_CUSTOMER_BOOKING;
         } catch (PaymentFailedException e) {
+            log.error("Payment Failed for booking request id : {}", showSeats.get(0).getBookingId());
             return PAYMENT_FAILED;
+        } catch (Exception e) {
+            log.error("Error in confirming seats for booking request : {} ", bookingRequest, e);
+            return e.getMessage();
         }
     }
 
