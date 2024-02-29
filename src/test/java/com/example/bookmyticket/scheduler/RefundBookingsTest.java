@@ -18,6 +18,7 @@ public class RefundBookingsTest {
 
     @Mock
     private RefundRepository refundRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);

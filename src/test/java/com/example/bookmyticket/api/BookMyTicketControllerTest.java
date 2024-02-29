@@ -1,8 +1,6 @@
 package com.example.bookmyticket.api;
 
 import com.example.bookmyticket.dao.BookingRequest;
-import com.example.bookmyticket.dao.Theater;
-import com.example.bookmyticket.dto.TheaterDTO;
 import com.example.bookmyticket.repos.TheaterRepository;
 import com.example.bookmyticket.service.BookMyTicketService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +10,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class BookMyTicketControllerTest {
     @Mock

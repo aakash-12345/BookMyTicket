@@ -1,8 +1,11 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.dto.*;
-import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.dao.*;
+import com.example.bookmyticket.dto.OfferDTO;
+import com.example.bookmyticket.dto.ShowDTO;
+import com.example.bookmyticket.dto.ShowSeatDTOResponse;
+import com.example.bookmyticket.dto.TheaterDTO;
+import com.example.bookmyticket.repos.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,8 +21,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyIterable;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class BookMyTicketServiceTest {

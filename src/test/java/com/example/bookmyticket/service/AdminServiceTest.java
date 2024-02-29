@@ -1,11 +1,11 @@
 package com.example.bookmyticket.service;
 
-import com.example.bookmyticket.repos.*;
-import com.example.bookmyticket.dto.*;
 import com.example.bookmyticket.dao.Show;
 import com.example.bookmyticket.dao.ShowSeat;
 import com.example.bookmyticket.dao.Theater;
 import com.example.bookmyticket.dao.TheaterSeat;
+import com.example.bookmyticket.dto.*;
+import com.example.bookmyticket.repos.*;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,6 +105,7 @@ public class AdminServiceTest {
         verify(showRepository, times(validShowDTOs.size())).save(any(Show.class));
         verify(showSeatRepository, times(validShowDTOs.size() * theaterSeats.size())).save(any(ShowSeat.class));
     }
+
     @Test
     void testAddMovies() {
 
@@ -120,6 +121,7 @@ public class AdminServiceTest {
 
         verify(movieRepository).saveAll(anyIterable());
     }
+
     @Test
     void testAddTheaterSeats() {
 
@@ -136,6 +138,7 @@ public class AdminServiceTest {
 
         verify(theaterSeatRepository).saveAll(anyIterable());
     }
+
     @Test
     void testAddCustomers() {
 
@@ -150,6 +153,7 @@ public class AdminServiceTest {
 
         verify(customerRepository).saveAll(anyIterable());
     }
+
     @Test
     void testAddOffers() {
 
