@@ -134,9 +134,9 @@ public class BookMyTicketServiceTest {
         when(showSeatRepository.findAllByShowIdAndStatus(validShowId, ShowSeat.BookingStatus.UNRESERVED))
                 .thenReturn(availableShowSeats);
 
-        List<ShowSeatDTOResponse> result = bookMyTicketService.findAllAvailableSeatsForShow(validShowId);
+        ShowSeatDTOResponse result = bookMyTicketService.findAllAvailableSeatsForShow(validShowId);
 
-        assertEquals(availableShowSeats.size(), result.size());
+        assertEquals(availableShowSeats.size(), result.getAvailableShowSeatIDs().size());
     }
 
     @Test

@@ -12,8 +12,8 @@ import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.repos.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -88,24 +88,28 @@ public class BookMyTicketService {
                 .build()).collect(Collectors.toList());
     }
 
-    public List<ShowSeatDTOResponse> findAllAvailableSeatsForShow(Long showId) {
+    public ShowSeatDTOResponse findAllAvailableSeatsForShow(Long showId) {
         log.info("Finding all available seats for show id : {}", showId);
         List<ShowSeat> showSeats = showSeatRepository.findAllByShowIdAndStatus(showId, ShowSeat.BookingStatus.UNRESERVED);
         List<Long> availableshowSeatIdList = showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList());
         log.info("Number of available seats for show id {} : {}", showId, availableshowSeatIdList.size());
-        return showSeats.stream().map(showSeat -> ShowSeatDTOResponse.builder()
-                .showId(showSeat.getShowId())
+        return ShowSeatDTOResponse.builder()
+                .showId(showSeats.get(0).getShowId())
                 .availableShowSeatIDs(availableshowSeatIdList)
-                .build()).collect(Collectors.toList());
+                .build();
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public String reserveSeats(BookingRequest bookingRequest) {
-        log.info("Reserving seats for booking request : {}", bookingRequest);
-        List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
+
         try {
+            log.info("Reserving seats for booking request : {}", bookingRequest);
+            List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
             log.info("Validating reservation for show seats : {}", bookingRequest.getSeats());
             validateReservation(showSeats);
+            if (bookingRequest.getSeats().size() != showSeats.size()) {
+                throw new SeatUnavailableException("Seats are not available for reservation : " + bookingRequest.getSeats());
+            }
             log.info("Validating valid customer for booking request : {}", bookingRequest.getCustomerId());
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId())
                     .orElseThrow(CustomerNotFoundException::new);
@@ -126,7 +130,7 @@ public class BookMyTicketService {
             showSeatRepository.saveAll(showSeats);
             log.info("Reservation successful for booking request : {}", bookingRequest);
             return RESERVATION_SUCCESSFUL;
-        } catch (SeatUnavailableException e) {
+        } catch (SeatUnavailableException | CannotAcquireLockException e) {
             log.error("Seats are not available for reservation : {}", bookingRequest.getSeats());
             return SEATS_UNAVAILABLE;
         } catch (CustomerNotFoundException e) {

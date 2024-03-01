@@ -32,7 +32,7 @@ public class BookMyTicketController {
     }
 
     @GetMapping(path = "/availableShowSeats")
-    public List<ShowSeatDTOResponse> availableShowSeats(@RequestParam(value = "showId") Long showId) {
+    public ShowSeatDTOResponse availableShowSeats(@RequestParam(value = "showId") Long showId) {
         return bookMyTicketService.findAllAvailableSeatsForShow(showId);
     }
 
