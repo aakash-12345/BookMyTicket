@@ -140,7 +140,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testReserveSeats() {
+    public void testReserveSeats() throws Exception {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -187,7 +187,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testReserveSeats_SeatUnavailable() {
+    public void testReserveSeats_SeatUnavailable() throws Exception {
 
         BookingRequest bookingRequest = new BookingRequest();
 
@@ -199,7 +199,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testReserveSeats_CustomerNotFound() {
+    public void testReserveSeats_CustomerNotFound() throws Exception {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -226,7 +226,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testConfirmSeats_Successful() {
+    public void testConfirmSeats_Successful() throws Exception {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -280,7 +280,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testConfirmSeats_Failed_In_Concurrency() {
+    public void testConfirmSeats_Failed_In_Concurrency() throws Exception {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -334,7 +334,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testConfirmSeats_SeatUnavailable() {
+    public void testConfirmSeats_SeatUnavailable() throws Exception {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -360,7 +360,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testConfirmSeats_InvalidBooking() {
+    public void testConfirmSeats_InvalidBooking() throws Exception {
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);

@@ -37,17 +37,25 @@ public class BookMyTicketController {
     }
 
     @PostMapping(path = "/reserveSeats")
-    public String reserveSeats(@RequestBody BookingRequest bookingRequest) {
-        return bookMyTicketService.reserveSeats(bookingRequest);
+    public String reserveSeats(@RequestBody BookingRequest bookingRequest) throws Exception {
+        try{
+            return bookMyTicketService.reserveSeats(bookingRequest);
+        } catch (Exception e) {
+           return e.getMessage();
+        }
     }
 
     @PostMapping(path = "/confirmSeats")
     public String confirmSeats(
             @RequestBody BookingRequest bookingRequest,
             @RequestParam(value = "offerId", required = false) Long offerId
-    ) {
-        offerId = offerId == null ? 0 : offerId;
-        return bookMyTicketService.confirmSeats(bookingRequest, offerId);
+    ) throws Exception{
+        try{
+            offerId = offerId == null ? 0 : offerId;
+            return bookMyTicketService.confirmSeats(bookingRequest, offerId);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     @GetMapping(path = "/offerList")

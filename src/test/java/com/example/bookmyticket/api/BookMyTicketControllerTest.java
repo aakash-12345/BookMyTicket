@@ -60,7 +60,7 @@ public class BookMyTicketControllerTest {
     }
 
     @Test
-    public void testReserveSeats() {
+    public void testReserveSeats() throws Exception {
         BookingRequest bookingRequest = BookingRequest.builder()
                 .showId(1L)
                 .seats(new ArrayList<>())
@@ -73,7 +73,7 @@ public class BookMyTicketControllerTest {
     }
 
     @Test
-    public void testConfirmSeats() {
+    public void testConfirmSeats() throws Exception{
         BookingRequest bookingRequest = BookingRequest.builder()
                 .showId(1L)
                 .seats(new ArrayList<>())
