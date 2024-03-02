@@ -37,11 +37,11 @@ public class BookMyTicketController {
     }
 
     @PostMapping(path = "/reserveSeats")
-    public String reserveSeats(@RequestBody BookingRequest bookingRequest) throws Exception {
-        try{
+    public String reserveSeats(@RequestBody BookingRequest bookingRequest) {
+        try {
             return bookMyTicketService.reserveSeats(bookingRequest);
         } catch (Exception e) {
-           return e.getMessage();
+            return e.getMessage();
         }
     }
 
@@ -49,8 +49,8 @@ public class BookMyTicketController {
     public String confirmSeats(
             @RequestBody BookingRequest bookingRequest,
             @RequestParam(value = "offerId", required = false) Long offerId
-    ) throws Exception{
-        try{
+    ) {
+        try {
             offerId = offerId == null ? 0 : offerId;
             return bookMyTicketService.confirmSeats(bookingRequest, offerId);
         } catch (Exception e) {

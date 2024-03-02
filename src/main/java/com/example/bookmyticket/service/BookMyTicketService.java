@@ -101,7 +101,7 @@ public class BookMyTicketService {
             log.info("Validating reservation for show seats : {}", bookingRequest.getSeats());
             validateReservation(showSeats);
             if (bookingRequest.getSeats().size() != showSeats.size()) {
-                throw new SeatUnavailableException("Seats are not available for reservation : " + bookingRequest.getSeats());
+                throw new SeatUnavailableException(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats());
             }
             log.info("Validating valid customer for booking request : {}", bookingRequest.getCustomerId());
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId())

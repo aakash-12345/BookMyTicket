@@ -60,6 +60,9 @@ public class BookMyTicketServiceTest {
     @InjectMocks
     private BookMyTicketService bookMyTicketService;
 
+    @Mock
+    private BookMyTicketService bookMyTicketService1;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -192,7 +195,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testReserveSeats_SeatUnavailable() throws Exception {
+    public void testReserveSeats_SeatUnavailable() {
 
         BookingRequest bookingRequest = new BookingRequest();
 
@@ -205,7 +208,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testReserveSeats_CustomerNotFound() throws Exception {
+    public void testReserveSeats_CustomerNotFound() {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -288,7 +291,7 @@ public class BookMyTicketServiceTest {
     }
 
     @Test
-    public void testConfirmSeats_Failed_In_Concurrency() throws Exception {
+    public void testConfirmSeats_Failed_In_Concurrency() {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -336,15 +339,15 @@ public class BookMyTicketServiceTest {
                 .offerStartDate(LocalDate.now())
                 .offerId(1L).build();
         when(offerRepository.findById(offerId)).thenReturn(Optional.of(mockOffer));
-        ReservationExpiredException exception = assertThrows(ReservationExpiredException.class, () -> {
-            bookMyTicketService.confirmSeats(bookingRequest, offerId);
-        });
+        ReservationExpiredException exception = assertThrows(ReservationExpiredException.class, () ->
+                bookMyTicketService.confirmSeats(bookingRequest, offerId)
+        );
         assertEquals(ConstantsUtil.RESERVATION_EXPIRED + bookingRequest, exception.getMessage());
 
     }
 
     @Test
-    public void testConfirmSeats_SeatUnavailable() throws Exception {
+    public void testConfirmSeats_SeatUnavailable() {
 
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
@@ -364,14 +367,14 @@ public class BookMyTicketServiceTest {
 
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        SeatUnavailableException exception = assertThrows(SeatUnavailableException.class, () -> {
-            bookMyTicketService.confirmSeats(bookingRequest, offerId);
-        });
+        SeatUnavailableException exception = assertThrows(SeatUnavailableException.class, () ->
+                bookMyTicketService.confirmSeats(bookingRequest, offerId)
+        );
         assertEquals(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats(), exception.getMessage());
     }
 
     @Test
-    public void testConfirmSeats_InvalidBooking() throws Exception {
+    public void testConfirmSeats_InvalidBooking() {
         BookingRequest bookingRequest = new BookingRequest();
         bookingRequest.setSeats(new ArrayList<>(List.of(1L, 2L, 3L)));
         bookingRequest.setCustomerId(1L);
@@ -400,9 +403,8 @@ public class BookMyTicketServiceTest {
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
-        InvalidBookingException exception = assertThrows(InvalidBookingException.class, () -> {
-            bookMyTicketService.confirmSeats(bookingRequest, offerId);
-        });
+        InvalidBookingException exception = assertThrows(InvalidBookingException.class,
+                () -> bookMyTicketService.confirmSeats(bookingRequest, offerId));
         assertEquals(ConstantsUtil.INVALID_CUSTOMER_BOOKING + booking.getBookingId(), exception.getMessage());
     }
 

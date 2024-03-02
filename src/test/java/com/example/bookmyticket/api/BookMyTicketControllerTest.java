@@ -11,8 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class BookMyTicketControllerTest {
     @Mock
@@ -73,13 +72,42 @@ public class BookMyTicketControllerTest {
     }
 
     @Test
-    public void testConfirmSeats() throws Exception{
+    public void testReserveSeatsException() throws Exception {
+        BookingRequest bookingRequest = BookingRequest.builder()
+                .showId(1L)
+                .seats(new ArrayList<>())
+                .customerId(1L).build();
+        when(bookMyTicketService.reserveSeats(bookingRequest)).thenThrow(new Exception("Error"));
+        bookMyTicketController.reserveSeats(bookingRequest);
+
+        verify(bookMyTicketService, times(1)).reserveSeats(bookingRequest);
+
+    }
+
+
+    @Test
+    public void testConfirmSeats() throws Exception {
         BookingRequest bookingRequest = BookingRequest.builder()
                 .showId(1L)
                 .seats(new ArrayList<>())
                 .customerId(1L).build();
         Long offerId = 1L;
 
+        bookMyTicketController.confirmSeats(bookingRequest, offerId);
+
+        verify(bookMyTicketService, times(1)).confirmSeats(bookingRequest, offerId);
+
+    }
+
+    @Test
+    public void testConfirmSeatsException() throws Exception {
+        BookingRequest bookingRequest = BookingRequest.builder()
+                .showId(1L)
+                .seats(new ArrayList<>())
+                .customerId(1L).build();
+        Long offerId = 1L;
+
+        when(bookMyTicketService.confirmSeats(bookingRequest, offerId)).thenThrow(new Exception("Error"));
         bookMyTicketController.confirmSeats(bookingRequest, offerId);
 
         verify(bookMyTicketService, times(1)).confirmSeats(bookingRequest, offerId);
