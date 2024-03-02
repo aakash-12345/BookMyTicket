@@ -1,6 +1,6 @@
 package com.example.bookmyticket.exception;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -60,7 +60,7 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @RequiredArgsConstructor
-    @Data
+    @Getter
     public static class ErrorResponse {
         private final String message;
     }

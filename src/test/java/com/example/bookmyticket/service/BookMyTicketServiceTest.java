@@ -60,9 +60,6 @@ public class BookMyTicketServiceTest {
     @InjectMocks
     private BookMyTicketService bookMyTicketService;
 
-    @Mock
-    private BookMyTicketService bookMyTicketService1;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
