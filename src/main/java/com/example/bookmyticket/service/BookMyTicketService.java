@@ -5,10 +5,7 @@ import com.example.bookmyticket.dto.OfferDTO;
 import com.example.bookmyticket.dto.ShowDTO;
 import com.example.bookmyticket.dto.ShowSeatDTOResponse;
 import com.example.bookmyticket.dto.TheaterDTO;
-import com.example.bookmyticket.exception.CustomerNotFoundException;
-import com.example.bookmyticket.exception.InvalidBookingException;
-import com.example.bookmyticket.exception.PaymentFailedException;
-import com.example.bookmyticket.exception.SeatUnavailableException;
+import com.example.bookmyticket.exception.*;
 import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.util.ConstantsUtil;
 import lombok.RequiredArgsConstructor;
@@ -178,6 +175,9 @@ public class BookMyTicketService {
         } catch (PaymentFailedException e) {
             log.error(ConstantsUtil.PAYMENT_FAILED + showSeats.get(0).getBookingId(), e);
             throw new PaymentFailedException(ConstantsUtil.PAYMENT_FAILED + showSeats.get(0).getBookingId());
+        } catch (ReservationExpiredException e) {
+            log.error(ConstantsUtil.RESERVATION_EXPIRED + bookingRequest, e);
+            throw new ReservationExpiredException(ConstantsUtil.RESERVATION_EXPIRED + bookingRequest);
         } catch (Exception e) {
             log.error(ConstantsUtil.UNKNOWN_CONFIRM_ERROR + bookingRequest, e);
             throw new Exception(ConstantsUtil.UNKNOWN_CONFIRM_ERROR + bookingRequest);
@@ -212,7 +212,7 @@ public class BookMyTicketService {
     }
 
     @Transactional
-    public void doPayment(Booking booking, List<ShowSeat> showSeats) throws PaymentFailedException {
+    public void doPayment(Booking booking, List<ShowSeat> showSeats) throws Exception {
         try {
             // Payment Gateway Integration
             log.info("Payment Done Successfully for booking : {}", booking);
@@ -229,9 +229,7 @@ public class BookMyTicketService {
                 booking.setIsCancelled(true);
                 bookingRepository.save(booking);
                 log.info("Booking cancelled and refund request added for booking : {}", booking.getBookingId());
-                throw new SeatUnavailableException(
-                        "Your Reservation Expired. Please try again. Payment will be refunded in 2 business days"
-                );
+                throw new ReservationExpiredException();
             }
             for (ShowSeat showSeat : showSeats) {
                 showSeat.setStatus(ShowSeat.BookingStatus.CONFIRMED);
@@ -242,6 +240,8 @@ public class BookMyTicketService {
             bookingRepository.save(booking);
             showSeatRepository.saveAll(showSeats);
             log.info("Payment Done and seat confirmed successfully for booking : {}", booking);
+        } catch (ReservationExpiredException e) {
+            throw new ReservationExpiredException(e.getMessage());
         } catch (Exception e) {
             throw new PaymentFailedException(e.getMessage());
         }

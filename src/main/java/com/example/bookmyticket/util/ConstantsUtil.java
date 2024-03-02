@@ -9,4 +9,6 @@ public class ConstantsUtil {
     public static final String PAYMENT_FAILED = "Payment Failed for booking request id : ";
     public static final String UNKNOWN_CONFIRM_ERROR = "Error in confirming seats for booking request : ";
     public static final String UNKNOWN_RESERVE_ERROR = "Error in reserving seats for booking request : ";
+    public static final String RESERVATION_EXPIRED = "Your Reservation Expired. Please try again. Payment will be " +
+            "refunded in 2 business days";
 }

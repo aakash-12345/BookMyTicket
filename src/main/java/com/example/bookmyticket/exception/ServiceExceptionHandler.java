@@ -48,6 +48,13 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
         return handleException(ex);
     }
 
+    @ExceptionHandler(ReservationExpiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleReservationExpiredException(ReservationExpiredException ex) {
+        return handleException(ex);
+    }
+
     private ErrorResponse handleException(Exception e) {
         return new ErrorResponse(e.getMessage());
     }
