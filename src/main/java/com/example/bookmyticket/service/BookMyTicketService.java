@@ -10,6 +10,7 @@ import com.example.bookmyticket.exception.InvalidBookingException;
 import com.example.bookmyticket.exception.PaymentFailedException;
 import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.repos.*;
+import com.example.bookmyticket.util.ConstantsUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.CannotAcquireLockException;
@@ -30,13 +31,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class BookMyTicketService {
-
-    public static final String BOOKING_CONFIRMED = "Booking Confirmed.";
-    public static final String SEATS_UNAVAILABLE = "Seats Unavailable.";
-    public static final String RESERVATION_SUCCESSFUL = "Reservation Successful.";
-    public static final String INVALID_CUSTOMER_BOOKING = "Invalid Customer Booking.";
-    public static final String CUSTOMER_NOT_FOUND = "Customer Not Found.";
-    public static final String PAYMENT_FAILED = "Payment is Failed.";
 
     private final TheaterRepository theaterRepository;
 
@@ -130,17 +124,17 @@ public class BookMyTicketService {
                 showSeatItem.setBookingId(booking.getBookingId());
             });
             showSeatRepository.saveAll(showSeats);
-            log.info("Reservation successful for booking request : {}", bookingRequest);
-            return RESERVATION_SUCCESSFUL;
+            log.info(ConstantsUtil.RESERVATION_SUCCESSFUL + bookingRequest);
+            return ConstantsUtil.RESERVATION_SUCCESSFUL;
         } catch (SeatUnavailableException | CannotAcquireLockException e) {
-            log.error("Seats are not available for reservation : {}", bookingRequest.getSeats(), e);
-            throw new SeatUnavailableException("Seats are not available for reservation : " + bookingRequest.getSeats());
+            log.error(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats(), e);
+            throw new SeatUnavailableException(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats());
         } catch (CustomerNotFoundException e) {
-            log.error("Customer not found for customer id : {}", bookingRequest.getCustomerId(), e);
-            throw new CustomerNotFoundException("Customer not found for customer id : " + bookingRequest.getCustomerId());
+            log.error(ConstantsUtil.CUSTOMER_NOT_FOUND + bookingRequest.getCustomerId(), e);
+            throw new CustomerNotFoundException(ConstantsUtil.CUSTOMER_NOT_FOUND + bookingRequest.getCustomerId());
         } catch (Exception e) {
-            log.error("Error in reserving seats for booking request : {} ", bookingRequest, e);
-            throw new Exception("Error in reserving seats for booking request : {} " + bookingRequest);
+            log.error(ConstantsUtil.UNKNOWN_RESERVE_ERROR + bookingRequest, e);
+            throw new Exception(ConstantsUtil.UNKNOWN_RESERVE_ERROR + bookingRequest);
         }
 
     }
@@ -176,22 +170,22 @@ public class BookMyTicketService {
             log.info("Seats confirmed successfully for booking request : {}", bookingRequest.getSeats());
             return bookingConfirmedMessage(showSeats);
         } catch (SeatUnavailableException | CannotAcquireLockException e) {
-            log.error("Seats are not available for reservation : {}", bookingRequest.getSeats(), e);
-            throw new SeatUnavailableException("Seats are not available for reservation : " + bookingRequest.getSeats());
+            log.error(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats(), e);
+            throw new SeatUnavailableException(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats());
         } catch (InvalidBookingException e) {
-            log.error("Invalid Customer Booking for booking request id : {}", showSeats.get(0).getBookingId(), e);
-            throw new InvalidBookingException("Invalid Customer Booking for booking request id : " + showSeats.get(0).getBookingId());
+            log.error(ConstantsUtil.INVALID_CUSTOMER_BOOKING + showSeats.get(0).getBookingId(), e);
+            throw new InvalidBookingException(ConstantsUtil.INVALID_CUSTOMER_BOOKING + showSeats.get(0).getBookingId());
         } catch (PaymentFailedException e) {
-            log.error("Payment Failed for booking request id : {}", showSeats.get(0).getBookingId(), e);
-            throw new PaymentFailedException("Payment Failed for booking request id : " + showSeats.get(0).getBookingId());
+            log.error(ConstantsUtil.PAYMENT_FAILED + showSeats.get(0).getBookingId(), e);
+            throw new PaymentFailedException(ConstantsUtil.PAYMENT_FAILED + showSeats.get(0).getBookingId());
         } catch (Exception e) {
-            log.error("Error in confirming seats for booking request : {} ", bookingRequest, e);
-            throw new Exception("Error in confirming seats for booking request : {} " + bookingRequest);
+            log.error(ConstantsUtil.UNKNOWN_CONFIRM_ERROR + bookingRequest, e);
+            throw new Exception(ConstantsUtil.UNKNOWN_CONFIRM_ERROR + bookingRequest);
         }
     }
 
     private String bookingConfirmedMessage(List<ShowSeat> showSeats) {
-        return BOOKING_CONFIRMED + ".\n Your booking ID is : " +
+        return ConstantsUtil.BOOKING_CONFIRMED + ".\n Your booking ID is : " +
                 showSeats.get(0).getBookingId() + ".\n Your seats : " +
                 showSeats.stream().map(ShowSeat::getShowSeatId).collect(Collectors.toList());
     }

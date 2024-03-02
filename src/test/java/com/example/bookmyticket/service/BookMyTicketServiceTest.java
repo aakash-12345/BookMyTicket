@@ -6,6 +6,7 @@ import com.example.bookmyticket.dto.ShowDTO;
 import com.example.bookmyticket.dto.ShowSeatDTOResponse;
 import com.example.bookmyticket.dto.TheaterDTO;
 import com.example.bookmyticket.repos.*;
+import com.example.bookmyticket.util.ConstantsUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -262,7 +263,8 @@ public class BookMyTicketServiceTest {
 
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        when(showSeatRepository.findAllByShowSeatIdInAndStatus(bookingRequest.getSeats(), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING)).thenReturn(mockShowSeats);
+        when(showSeatRepository.findAllByShowSeatIdInAndStatus(bookingRequest.getSeats(),
+                ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING)).thenReturn(mockShowSeats);
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
@@ -276,7 +278,7 @@ public class BookMyTicketServiceTest {
 
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
-        assertTrue(result.startsWith(BookMyTicketService.BOOKING_CONFIRMED));
+        assertTrue(result.startsWith(ConstantsUtil.BOOKING_CONFIRMED));
     }
 
     @Test
@@ -316,7 +318,8 @@ public class BookMyTicketServiceTest {
 
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        when(showSeatRepository.findAllByShowSeatIdInAndStatus(bookingRequest.getSeats(), ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING)).thenReturn(new ArrayList<>());
+        when(showSeatRepository.findAllByShowSeatIdInAndStatus(bookingRequest.getSeats(),
+                ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING)).thenReturn(new ArrayList<>());
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
@@ -330,7 +333,7 @@ public class BookMyTicketServiceTest {
 
         String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
 
-        assertFalse(result.startsWith(BookMyTicketService.BOOKING_CONFIRMED));
+        assertFalse(result.startsWith(ConstantsUtil.BOOKING_CONFIRMED));
     }
 
     @Test
