@@ -5,6 +5,10 @@ import com.example.bookmyticket.dto.OfferDTO;
 import com.example.bookmyticket.dto.ShowDTO;
 import com.example.bookmyticket.dto.ShowSeatDTOResponse;
 import com.example.bookmyticket.dto.TheaterDTO;
+import com.example.bookmyticket.exception.CustomerNotFoundException;
+import com.example.bookmyticket.exception.InvalidBookingException;
+import com.example.bookmyticket.exception.ReservationExpiredException;
+import com.example.bookmyticket.exception.SeatUnavailableException;
 import com.example.bookmyticket.repos.*;
 import com.example.bookmyticket.util.ConstantsUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,7 +188,7 @@ public class BookMyTicketServiceTest {
 
         String result = bookMyTicketService.reserveSeats(bookingRequest);
 
-        assertEquals("Reservation Successful.", result);
+        assertEquals(ConstantsUtil.RESERVATION_SUCCESSFUL, result);
     }
 
     @Test
@@ -194,9 +198,10 @@ public class BookMyTicketServiceTest {
 
         when(showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats())).thenReturn(new ArrayList<>());
 
-        String result = bookMyTicketService.reserveSeats(bookingRequest);
-
-        assertEquals("Seats Unavailable.", result);
+        SeatUnavailableException exception = assertThrows(SeatUnavailableException.class, () -> {
+            bookMyTicketService.reserveSeats(bookingRequest);
+        });
+        assertEquals(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats(), exception.getMessage());
     }
 
     @Test
@@ -221,9 +226,10 @@ public class BookMyTicketServiceTest {
 
         when(customerRepository.findById(bookingRequest.getCustomerId())).thenReturn(Optional.empty());
 
-        String result = bookMyTicketService.reserveSeats(bookingRequest);
-
-        assertEquals("Customer Not Found.", result);
+        CustomerNotFoundException exception = assertThrows(CustomerNotFoundException.class, () -> {
+            bookMyTicketService.reserveSeats(bookingRequest);
+        });
+        assertEquals(ConstantsUtil.CUSTOMER_NOT_FOUND + bookingRequest.getCustomerId(), exception.getMessage());
     }
 
     @Test
@@ -330,10 +336,11 @@ public class BookMyTicketServiceTest {
                 .offerStartDate(LocalDate.now())
                 .offerId(1L).build();
         when(offerRepository.findById(offerId)).thenReturn(Optional.of(mockOffer));
+        ReservationExpiredException exception = assertThrows(ReservationExpiredException.class, () -> {
+            bookMyTicketService.confirmSeats(bookingRequest, offerId);
+        });
+        assertEquals(ConstantsUtil.RESERVATION_EXPIRED + bookingRequest, exception.getMessage());
 
-        String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
-
-        assertFalse(result.startsWith(ConstantsUtil.BOOKING_CONFIRMED));
     }
 
     @Test
@@ -357,9 +364,10 @@ public class BookMyTicketServiceTest {
 
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
 
-        String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
-
-        assertEquals("Seats Unavailable.", result);
+        SeatUnavailableException exception = assertThrows(SeatUnavailableException.class, () -> {
+            bookMyTicketService.confirmSeats(bookingRequest, offerId);
+        });
+        assertEquals(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats(), exception.getMessage());
     }
 
     @Test
@@ -392,9 +400,10 @@ public class BookMyTicketServiceTest {
         when(showSeatRepository.findAllById(bookingRequest.getSeats())).thenReturn(mockShowSeats);
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
 
-        String result = bookMyTicketService.confirmSeats(bookingRequest, offerId);
-
-        assertEquals("Invalid Customer Booking.", result);
+        InvalidBookingException exception = assertThrows(InvalidBookingException.class, () -> {
+            bookMyTicketService.confirmSeats(bookingRequest, offerId);
+        });
+        assertEquals(ConstantsUtil.INVALID_CUSTOMER_BOOKING + booking.getBookingId(), exception.getMessage());
     }
 
     @Test
