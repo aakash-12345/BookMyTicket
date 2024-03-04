@@ -188,7 +188,7 @@ public class BookMyTicketServiceTest {
 
         String result = bookMyTicketService.reserveSeats(bookingRequest);
 
-        assertEquals(ConstantsUtil.RESERVATION_SUCCESSFUL, result);
+        assertEquals(ConstantsUtil.RESERVATION_SUCCESSFUL + bookingRequest, result);
     }
 
     @Test

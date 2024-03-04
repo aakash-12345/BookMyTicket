@@ -22,19 +22,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RemoveExpiredReservations {
 
+    private final ShowSeatRepository showSeatRepository;
+    private final BookingRepository bookingRepository;
     @Getter
     @Value("${payment.session.timeout}")
     private Integer sessionTimeout = 300000;
-
-    private final ShowSeatRepository showSeatRepository;
-
-    private final BookingRepository bookingRepository;
 
     @Transactional
     @Scheduled(fixedRateString = "${polling.frequency}")
     public void removeAllExpiredReservations() {
         log.info("Removing expired reservations scheduler started");
-        List<ShowSeat> pendingShowSeats = showSeatRepository.findAllByStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
+        List<ShowSeat> pendingShowSeats =
+                showSeatRepository.findAllByStatus(ShowSeat.BookingStatus.RESERVED_PAYMENT_PENDING);
         if (!CollectionUtils.isEmpty(pendingShowSeats)) {
             for (ShowSeat showSeat : pendingShowSeats) {
                 if (Duration.between(showSeat.getReservationTime(), LocalDateTime.now()).toMillis() > getSessionTimeout()) {

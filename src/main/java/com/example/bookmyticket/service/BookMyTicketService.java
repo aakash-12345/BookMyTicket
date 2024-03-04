@@ -100,9 +100,6 @@ public class BookMyTicketService {
             List<ShowSeat> showSeats = showSeatRepository.findAllByShowSeatIdIn(bookingRequest.getSeats());
             log.info("Validating reservation for show seats : {}", bookingRequest.getSeats());
             validateReservation(showSeats);
-            if (bookingRequest.getSeats().size() != showSeats.size()) {
-                throw new SeatUnavailableException(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats());
-            }
             log.info("Validating valid customer for booking request : {}", bookingRequest.getCustomerId());
             Customer customer = customerRepository.findById(bookingRequest.getCustomerId())
                     .orElseThrow(CustomerNotFoundException::new);
@@ -122,7 +119,7 @@ public class BookMyTicketService {
             });
             showSeatRepository.saveAll(showSeats);
             log.info(ConstantsUtil.RESERVATION_SUCCESSFUL + bookingRequest);
-            return ConstantsUtil.RESERVATION_SUCCESSFUL;
+            return ConstantsUtil.RESERVATION_SUCCESSFUL + bookingRequest;
         } catch (SeatUnavailableException | CannotAcquireLockException e) {
             log.error(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats(), e);
             throw new SeatUnavailableException(ConstantsUtil.SEATS_UNAVAILABLE + bookingRequest.getSeats());
