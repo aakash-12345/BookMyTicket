@@ -9,6 +9,8 @@ import com.example.bookmyticket.service.BookMyTicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -61,6 +63,17 @@ public class BookMyTicketController {
     @GetMapping(path = "/offerList")
     public List<OfferDTO> offerList() {
         return bookMyTicketService.getOfferList();
+    }
+
+    @GetMapping(path = "/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        if (auth != null) {
+//            new SecurityContextLogoutHandler().logout(request, response, auth);
+////            persistentTokenBasedRememberMeServices.logout(request, response, auth);
+//            SecurityContextHolder.getContext().setAuthentication(null);
+//        }
+//
     }
 
 

@@ -5,6 +5,7 @@ import com.example.bookmyticket.dto.*;
 import com.example.bookmyticket.repos.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -95,7 +96,10 @@ public class AdminService {
         log.info("Adding customers");
         List<Customer> customerList = customers.stream().map(customerDTO -> Customer.builder()
                 .customerId(customerDTO.getCustomerId())
-                .customerName(customerDTO.getCustomerName()).build()).collect(Collectors.toList());
+                .customerName(customerDTO.getCustomerName())
+                .customerUserName(customerDTO.getCustomerUserName())
+                .customerPassword(new BCryptPasswordEncoder().encode(customerDTO.getCustomerPassword()))
+                .customerRoles(customerDTO.getCustomerRoles()).build()).collect(Collectors.toList());
         customerRepository.saveAll(customerList);
         log.info("Customers added successfully");
     }

@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "customer")
@@ -16,9 +19,13 @@ import javax.persistence.*;
 public class Customer {
     @Id
     @Column(name = "CUSTOMER_ID", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
-    @SequenceGenerator(name = "customer_seq", sequenceName = "customer_seq", initialValue = 1, allocationSize = 1)
     private Long customerId;
 
     private String customerName;
+
+    private String customerUserName;
+
+    private String customerPassword;
+
+    private String customerRoles;
 }

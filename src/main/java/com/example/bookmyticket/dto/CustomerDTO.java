@@ -10,4 +10,7 @@ import lombok.Data;
 public class CustomerDTO {
     private Long customerId;
     private String customerName;
+    private String customerUserName;
+    private String customerPassword;
+    private String customerRoles;
 }
